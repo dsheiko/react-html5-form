@@ -27,7 +27,7 @@ You can see the component in action [live demo](https://dsheiko.github.io/react-
 Represents form
 
 ### Props
-- <Function> `onSubmit` - form submit handler
+- `<Function>` `onSubmit` - form submit handler
 - all the attributes of Form HTML element
 
 ### API
@@ -36,9 +36,9 @@ Represents form
 - `setError( message = "")` - set form scope error message
 
 ### Scope parameters
-- <String> `error` - error message set with `setError()`
-- <Boolean> `valid` - form validity state
-- <React.Component> `form` - link to the component API
+- `<String>` `error` - error message set with `setError()`
+- `<Boolean>` `valid` - form validity state
+- `<React.Component>` `form` - link to the component API
 
 #### Defining component
 ```jsx
@@ -100,7 +100,7 @@ access the API by reference like `form.setError`
 <InputGroup validate={[ "email" ]} />
 // Group of multiple inputs
 <InputGroup validate={[ "month", "year" ]} />
-//
+// Custom validator
 <InputGroup validate={{
           "vatId": ( input ) => {
             if ( !input.current.value.startsWith( "DE" ) ) {
@@ -135,10 +135,10 @@ access the API by reference like `form.setError`
 - `checkValidity()` - find out if the input group has not inputs in invalid state
 
 ### Scope parameters
-- <String> `error` - validation message for the first invalid input
-- <String[]> `errors` - array of validation messages for all the inputs
-- <Boolean> `valid` - input group validity state (product of input states)
-- <React.Component> `inputGroup` - link to the component API
+- `<String>` `error` - validation message for the first invalid input
+- `<String[]>` `errors` - array of validation messages for all the inputs
+- `<Boolean>` `valid` - input group validity state (product of input states)
+- `<React.Component>` `inputGroup` - link to the component API
 
 
 #### Basic use
