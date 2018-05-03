@@ -1,5 +1,5 @@
 {
-  "name": "react-html5-form",
+  "name": "react-html5-form-demo",
   "version": "1.0.0",
   "description": "Form component to take full advantage of HTML5 Form Validation API",
   "main": "index.js",
