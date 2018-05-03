@@ -1,0 +1,45 @@
+{
+  "name": "react-html5-form",
+  "version": "1.0.0-RC1",
+  "description": "Form component to take full advantage of HTML5 Form Validation API",
+  "main": "src/Form.jsx",
+  "scripts": {
+    "test": "echo \"Unit-tests coming soon\" && exit 1"
+  },
+  "keywords":  ["validation", "react", "react validation"],
+  "author": {
+        "name": "Dmitry Sheiko",
+        "url": "http://dsheiko.com"
+   },
+  "scripts": {
+    "lint": "jscs src",
+    "lint:fix": "jscs src -x"
+  },
+  "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://github.com/fawek/codepainter/raw/master/LICENSE"
+      }
+  ],
+  "maintainers": [
+      {
+          "name": "Dmitry Sheiko",
+          "email": "me@dsheiko.com",
+          "web": "http://dsheiko.com"
+      }
+  ],
+  "repositories": [
+      {
+          "type": "git",
+          "url": "https://github.com/dsheiko/react-html5-form.git"
+      }
+  ],
+  "devDependencies": {
+    "jscs": "^3.0.7"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2"
+  }
+}
