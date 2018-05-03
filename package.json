@@ -2,8 +2,9 @@
   "name": "react-html5-form",
   "version": "1.0.0-RC.2",
   "description": "Form component to take full advantage of HTML5 Form Validation API",
-  "main": "src/Form.jsx",
+  "main": "dist/Form.js",
   "scripts": {
+    "build": "babel --out-dir dist --ignore *.spec.js src",
     "lint": "jscs src",
     "lint:fix": "jscs src -x"
   },
@@ -38,15 +39,11 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-loader": "^7.1.4",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.24.1",
-    "clean-webpack-plugin": "^0.1.19",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
-    "http-server": "^0.10.0",
-    "jscs": "^3.0.7",
-    "uglifyjs-webpack-plugin": "^1.0.1",
-    "webpack": "^3.8.1"
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "jscs": "^3.0.7"
   },
   "dependencies": {
     "prop-types": "^15.6.1",
