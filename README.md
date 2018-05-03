@@ -3,16 +3,22 @@
 [![NPM Version](https://img.shields.io/npm/v/react-html5-form.svg?style=flat)](https://www.npmjs.com/package/react-html5-form)
 [![NPM Downloads](https://img.shields.io/npm/dm/react-html5-form.svg?style=flat)](https://www.npmjs.com/package/react-html5-form)
 
-Form component that that takes full advantage of HTML5 Form Validation API (https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)
+With the package you don't need to re-create form validation logic every time. Instead you take full advantage of [HTML5 Form Validation API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation). Besides the package expose no custom input components, instead it provides wrapper `InputGroup`, which binds inputs (according to configuration) in the children DOM nodes. Thus you can go with both HTML controls and 3rd-party input components.
+
 
 ## Highlights
-- Component binds to any arbitrary input controls (HTML or ready-made components)
-- Component provides control over markup HTML validation constraints
-- You can easily customize standard validation messages
-- You can assign custom validators
-- You can toggle input group scope validation messages
-- You can toggle form scope error message
-- You can subscribe for input event and run input group validation (e.g. see [On-the-fly validation](#on-the-fly-validation))
+- Input implementation agnostic, can be used any arbitrary input controls (HTML or 3rd-party React components)
+- Standard HTML5 syntax for validation constraints (like `<input type="email" required maxLength="50" ... />`)
+- Can be extended with custom validators (again by using standard HTML5 API)
+- Can be setup for custom validation messages per `input`/`ValidityState.Property`
+- Form and input groups expose validity states, so you can use it to toggle scope error messages.
+- Form and input groups expose reference to own instances for children DOM nodes. So you can, for example, subscribe for `input` event and run input group validation (e.g. see [On-the-fly validation](#on-the-fly-validation))
+
+
+## Overview
+With `Form` we define scope of the form. The component exposes parameters `valid`, `error` and `form`. The first reflects actual validity state according to states of registered inputs. The second contains error message (can be set using API). The last one is instance of the component and provides access to the API.
+With `InputGroup` we define a fieldset that contains one or more semantically related inputs (e.g. selects `day`, `month`, `year` usually go togather). The group expose `valid`, `error`, `errors` and `inputGroup` variables on children Nodes. So we can automatically toggle group error message and content `classList` depending on them.
+We register inputs within `InputGroup` with `validate` prop. There we can specify a validator function, which will extend HTMP5 form validation logic. Very easily we can provide mapping for standard validation message (`translate` prop).
 
 
 ## Installation

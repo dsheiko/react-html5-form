@@ -1,7 +1,7 @@
 {
   "name": "react-html5- ",
   "version": "1.0.0-RC.4",
-  "description": "Form component to take full advantage of HTML5 Form Validation API",
+  "description": "Wrapper components Form and InputGroup to connect input to HTML5 Constraint Validation API",
   "main": "dist/Form.js",
   "scripts": {
     "build": "babel --out-dir dist --ignore *.spec.js src",
@@ -11,6 +11,9 @@
   "keywords": [
     "validation",
     "react",
+    "reactjs",
+    "form",
+    "HTML5",
     "react validation"
   ],
   "author": {
