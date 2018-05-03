@@ -67,8 +67,7 @@ module.exports = {
               ],
               plugins: [
                 "transform-object-rest-spread",
-                "transform-runtime",
-                "transform-decorators-legacy"
+                "transform-runtime"               
               ]
             }
           }]
