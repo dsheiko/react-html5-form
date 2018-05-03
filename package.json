@@ -1,6 +1,6 @@
 {
   "name": "react-html5- ",
-  "version": "1.0.0-RC.4",
+  "version": "1.0.0-RC.5",
   "description": "Wrapper components Form and InputGroup to connect input to HTML5 Constraint Validation API",
   "main": "dist/Form.js",
   "scripts": {
