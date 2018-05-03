@@ -2906,7 +2906,7 @@ var MyForm = function MyForm(props) {
         _react2.default.Fragment,
         null,
         _react2.default.createElement(
-          "h1",
+          "h2",
           null,
           "Demo Form"
         ),

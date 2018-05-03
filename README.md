@@ -1,14 +1,15 @@
 # React-html5-form
 
 Form component that that takes full advantage of HTML5 Form Validation API (https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)
-So you:
-- can use arbitrary input controls (HTML or components)
-- get control over markup constraints
-- can customize standard validation messages
-- can assign custom validators
-- can toggle input group scope message
-- can toggle form scope message
-- can subscribe for input event and run input group validation
+
+## Highlights
+- Components binds to any arbitrary input controls (HTML or ready-made components)
+- Component provides control over markup HTML validation constraints
+- You can easily customize standard validation messages
+- You can assign custom validators
+- You can toggle input group scope validation messages
+- You can toggle form scope error message
+- You can subscribe for input event and run input group validation (e.g. see [On-the-fly validation](#on-the-fly-validation))
 
 
 ## Installation
@@ -18,11 +19,10 @@ npm i react-html5-form
 ```
 
 ## Demo
-```bash
-cd ./demo
-```
 
-## <Form>
+You can see the component in action [live demo](https://dsheiko.github.io/react-html5-form/)
+
+## Form
 
 Represents form
 
@@ -90,7 +90,7 @@ The component calls `setState` for `checkValidity` prior calling the specified h
 access the API by reference like `form.setError`
 
 
-## <InputGroup>
+## InputGroup
 `InputGroup` defines scope and API for a group of arbitrary inputs registered with `validate` prop. `InputGroup` exposes in the scope parameters that can be used to toggle group validation message(s), group state representation and to access the component API
 
 ### Props

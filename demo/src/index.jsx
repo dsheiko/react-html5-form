@@ -18,7 +18,7 @@ const MyForm = props => (
   <Form onSubmit={onSubmit} id="myform">
   {({ error, valid }) => (
       <React.Fragment>
-        <h1>Demo Form</h1>
+        <h2>Demo Form</h2>
 
         { !valid && (<div className="alert alert-danger" role="alert">
             <strong>Oh snap!</strong> {error}
