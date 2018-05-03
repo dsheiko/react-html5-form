@@ -1,5 +1,8 @@
 # React-html5-form
 
+[![NPM Version](https://img.shields.io/npm/v/react-html5-form.svg?style=flat)](https://www.npmjs.com/package/react-html5-form)
+[![NPM Downloads](https://img.shields.io/npm/dm/react-html5-form.svg?style=flat)](https://www.npmjs.com/package/react-html5-form)
+
 Form component that that takes full advantage of HTML5 Form Validation API (https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)
 
 ## Highlights

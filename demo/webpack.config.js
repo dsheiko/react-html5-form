@@ -21,6 +21,7 @@ module.exports = {
       publicPath: PUBLIC_PATH
     },
 
+    mode: "development",
 
     watchOptions: {
       ignored: /node_modules/
