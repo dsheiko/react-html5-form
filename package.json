@@ -1,6 +1,6 @@
 {
   "name": "react-html5- ",
-  "version": "1.0.0-RC.3",
+  "version": "1.0.0-RC.4",
   "description": "Form component to take full advantage of HTML5 Form Validation API",
   "main": "dist/Form.js",
   "scripts": {
