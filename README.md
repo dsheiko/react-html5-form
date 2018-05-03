@@ -6,7 +6,7 @@
 Form component that that takes full advantage of HTML5 Form Validation API (https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)
 
 ## Highlights
-- Components binds to any arbitrary input controls (HTML or ready-made components)
+- Component binds to any arbitrary input controls (HTML or ready-made components)
 - Component provides control over markup HTML validation constraints
 - You can easily customize standard validation messages
 - You can assign custom validators
