@@ -3,7 +3,7 @@
 [![NPM Version](https://img.shields.io/npm/v/react-html5-form.svg?style=flat)](https://www.npmjs.com/package/react-html5-form)
 [![NPM Downloads](https://img.shields.io/npm/dm/react-html5-form.svg?style=flat)](https://www.npmjs.com/package/react-html5-form)
 
-With the package you don't need to re-create form validation logic every time. Instead you take full advantage of [HTML5 Form Validation API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation). Besides the package expose no custom input components, instead it provides wrapper `InputGroup`, which binds inputs (according to configuration) in the children DOM nodes. Thus you can go with both HTML controls and 3rd-party input components.
+With the package you don't need to re-create form validation logic every time. Instead you take full advantage of [HTML5 Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation). Besides the package expose no custom input components, instead it provides wrapper `InputGroup`, which binds inputs (according to configuration) in the children DOM nodes. Thus you can go with both HTML controls and 3rd-party input components.
 
 
 ## Highlights
