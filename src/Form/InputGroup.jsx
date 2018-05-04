@@ -26,7 +26,7 @@ export class InputGroupComponent extends React.Component {
 
 
   componentDidMount() {
-    const { validate, registerInputGroup, translate } = this.props,
+    const { validate, registerInputGroup, translate, onMount } = this.props,
           names = this.extractInputNames( validate );
     this.inputs = names
       .map( name => {
@@ -44,6 +44,7 @@ export class InputGroupComponent extends React.Component {
       .filter( el => Boolean( el ) );
 
     registerInputGroup( this );
+    onMount && onMount( this );
   }
 
   getValidationMessages() {
@@ -84,12 +85,23 @@ export class InputGroupComponent extends React.Component {
     return this.valid;
   }
 
+  static normalizeTagProps( props ) {
+    const whitelisted = { ...props };
+    [ "validate" , "translate", "tag", "registerInputGroup", "onMount" ].forEach( prop => {
+      if ( prop in whitelisted ) {
+        delete whitelisted[ prop ];
+      }
+    });
+    return whitelisted;
+  }
+
   render() {
     const { children, tag = "div", className } = this.props,
           Container = `${tag}`,
+          tagProps = InputGroupComponent.normalizeTagProps( this.props ),
           args = { ...this.state, inputGroup: this };
     return (
-        <Container ref={this.inputGroup} className={className}>{ children( args ) } </Container>);
+        <Container ref={this.inputGroup} {...tagProps}>{ children( args ) } </Container>);
   }
 };
 
@@ -105,6 +117,8 @@ InputGroup.propTypes = {
     PropTypes.object,
     PropTypes.array
   ]).isRequired,
+  registerInputGroup: PropTypes.func,
+  onMount: PropTypes.func,
   translate: PropTypes.object,
   tag: PropTypes.string,
   className: PropTypes.string

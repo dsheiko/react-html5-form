@@ -37,6 +37,7 @@ Represents form
 
 ### Props
 - `<Function>` `onSubmit` - form submit handler
+- `<Function>` `onMount` - callback that gets invoked in `componentDidMount()`, it receives component instance as parameter
 - all the attributes of Form HTML element
 
 ### API
@@ -135,7 +136,8 @@ access the API by reference like `form.setError`
 ```jsx
 <InputGroup tag="fieldset" ... />
 ```
-- <String> `className` - specify class name for the generated HTML element
+- `<Function>` `onMount` - callback that gets invoked in `componentDidMount()`, it receives component instance as parameter
+- all the attributes of Form HTML element
 
 ### API
 - `checkValidityAndUpdate()` - run `checkValidity()` and update the input group according to the actual validity state

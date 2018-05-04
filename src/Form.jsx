@@ -8,6 +8,7 @@ export class Form extends React.Component {
 
   constructor( props ) {
     super( props );
+    this.valid = false;
     this.form = React.createRef();
     this.onSubmit = this.onSubmit.bind( this );
 
@@ -32,7 +33,10 @@ export class Form extends React.Component {
     };
   }
 
-
+  componentDidMount() {
+    const { onMount } = this.props;
+    onMount && onMount( this );
+  }
 
   /**
    * Abstract method to be overriden by a concrete implementation
@@ -57,18 +61,20 @@ export class Form extends React.Component {
 
 
   checkValidity() {
-    const valid = this.state.inputGroups.reduce( ( isValid, group ) => {
+    this.valid = this.state.inputGroups.reduce( ( isValid, group ) => {
       return group.checkValidityAndUpdate() && isValid;
     }, true );
-    valid || this.scrollIntoViewFirstInvalidInputGroup();
-    return valid;
+    this.valid || this.scrollIntoViewFirstInvalidInputGroup();
+    return this.valid;
   }
 
   static normalizeTagProps( props ) {
     const whitelisted = { ...props };
-    if ( "onSubmit" in whitelisted ) {
-      delete whitelisted[ "onSubmit" ];
-    }
+    [ "onSubmit", "onMount" ].forEach( prop => {
+      if ( prop in whitelisted ) {
+        delete whitelisted[ prop ];
+      }
+    });
     return whitelisted;
   }
 
@@ -90,6 +96,7 @@ export class Form extends React.Component {
 
 Form.propTypes = {
   onSubmit: PropTypes.func,
+  onMount: PropTypes.func,
   tabindex: PropTypes.string,
   title: PropTypes.string,
   id: PropTypes.string,
