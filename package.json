@@ -1,6 +1,6 @@
 {
   "name": "react-html5-form",
-  "version": "1.0.0-RC.6",
+  "version": "1.0.0-RC.7",
   "description": "Wrapper components Form and InputGroup to connect input to HTML5 Constraint Validation API",
   "main": "dist/Form.js",
   "scripts": {
@@ -57,7 +57,7 @@
     "react-dom": "^16.3.2"
   },
   "jest": {
-      "coverageDirectory": "./coverage/",
-      "collectCoverage": true
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
   }
 }
