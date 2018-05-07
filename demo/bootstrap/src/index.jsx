@@ -116,7 +116,7 @@ const MyForm = props => (
         <InputGroup validate={{
           "vatId": ( input ) => {
             if ( !input.current.value.startsWith( "DE" ) ) {
-              input.setCustomValidity( "Code must start with DE" );
+              input.setCustomValidity( "Code must start with DE." );
               return false;
             }
             return true;

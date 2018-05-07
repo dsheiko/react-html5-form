@@ -34,6 +34,7 @@ export class InputGroupComponent extends React.Component {
   componentDidMount() {
     const { validate, registerInputGroup, translate, onMount } = this.props,
           names = this.extractInputNames( validate );
+
     this.inputs = names
       .map( name => {
         const selector = `[name="${name}"]`,
@@ -82,7 +83,7 @@ export class InputGroupComponent extends React.Component {
    * @returns {Input}
    */
   getInputByName( name ) {
-    if ( !this.inputs ) {
+    if ( !this.inputs || !this.inputs.length ) {
       return null;
     }
     return this.inputs.find( input => ( input.name === name ));

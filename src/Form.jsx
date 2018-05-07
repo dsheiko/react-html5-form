@@ -55,12 +55,19 @@ export class Form extends React.Component {
   }
 
   /**
+   * Shortcut to submit form
+   */
+  submit() {
+    this.form.current.submit();
+  }
+
+  /**
    * Scroll the first errored input group into view
    */
   scrollIntoViewFirstInvalidInputGroup() {
     const firstInvalid = this.state.inputGroups.find( group => !group.valid );
-    if ( firstInvalid && "scrollIntoView" in firstInvalid ) {
-      firstInvalid.scrollIntoView();
+    if ( firstInvalid && "scrollIntoView" in firstInvalid.inputGroup.current ) {
+      firstInvalid.inputGroup.current.scrollIntoView();
     }
   }
 

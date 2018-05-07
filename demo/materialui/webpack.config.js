@@ -3,10 +3,10 @@ const { join } = require( "path" ),
       pkg = require( "./package.json" ),
       CleanWebpackPlugin = require( "clean-webpack-plugin" ),
       SRC_FULL_PATH = join( __dirname, "./src/" ),
-      SRC_PKG_PATH = join( __dirname, "..", "./src/" ),
+      SRC_PKG_PATH = join( __dirname, "/../../", "./src/" ),
       PUBLIC_PATH = "./build/",
       PUBLIC_FULL_PATH = join( __dirname, PUBLIC_PATH );
-
+    
 module.exports = {
     // Application entry scripts
     entry: {
@@ -17,7 +17,6 @@ module.exports = {
     output: {
 			path: PUBLIC_FULL_PATH,
 			filename: `[name].js`,
-      chunkFilename: `[name].v${pkg.version}.widget.js`,
       publicPath: PUBLIC_PATH
     },
 

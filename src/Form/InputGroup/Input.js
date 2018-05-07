@@ -80,10 +80,11 @@ export class Input {
   * Try to get message associated with currently invalid state property
   * If failed, standard assiciated message
   * If failed, browser validation message
+  * @param {ValidityState} [validityState=null]
   * @returns {string}
   */
-  getValidationMessage() {
-    const validity = this.current.validity,
+  getValidationMessage( validityState = null ) {
+    const validity = validityState || this.current.validity,
           assignedMessage = this.getAssignedValidationMessage( validity );
 
     if ( assignedMessage ) {

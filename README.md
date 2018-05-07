@@ -45,6 +45,7 @@ Represents form
 - `checkValidityAndUpdateInputGroups()` - check form validity and update every input group
 - `checkValidityAndUpdate()` - check form validity and update only form state (without updating input groups)
 - `setError( message = "")` - set form scope error message
+- `submit()` - submit form
 
 ### Scope parameters
 - `<String>` `error` - error message set with `setError()`

@@ -1,7 +1,7 @@
 {
   "name": "react-html5-form",
-  "version": "1.0.0-RC.7",
-  "description": "Wrapper components Form and InputGroup to connect input to HTML5 Constraint Validation API",
+  "version": "1.0.0",
+  "description": "React components Form and InputGroup to connect form inputs to HTML5 Constraint Validation API",
   "main": "dist/Form.js",
   "scripts": {
     "test": "jest",
