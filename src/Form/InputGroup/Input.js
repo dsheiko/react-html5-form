@@ -21,15 +21,28 @@ export class Input {
     this.applyValidationMessageMapping( translate );
   }
 
+  /**
+   * Shortcut to setCustomValidity on DOM node
+   * @param {String} message
+   */
   setCustomValidity( message = "" ) {
     return this.current.setCustomValidity( message );
   }
 
+  /**
+   * Check checkValidity implementaiton. First it resets custom validity and gets input validity logical conjunction
+   * DOM node one and registered custom validator
+   * @returns {Boolean}
+   */
   checkValidity() {
     this.setCustomValidity();
     return this.current.checkValidity() && this.customValidator( this );
   }
 
+  /**
+   * Process object passed with translate
+   * @param {Object} translate
+   */
   applyValidationMessageMapping( translate ) {
     translate && Object.keys( translate ).forEach( key => {
       this.assignValidationMessage( key, translate[ key ] );

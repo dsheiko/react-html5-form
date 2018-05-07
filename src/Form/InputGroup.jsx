@@ -16,7 +16,11 @@ export class InputGroupComponent extends React.Component {
     };
   }
 
-
+  /**
+   * Helper to extract input names for both syntaxes valid for validate prop
+   * @param {*} validate
+   * @returns {Array}
+   */
   extractInputNames( validate ) {
     if ( Array.isArray( validate ) ) {
       return validate;
@@ -24,7 +28,9 @@ export class InputGroupComponent extends React.Component {
     return Object.keys( validate );
   }
 
-
+  /**
+   * Register inputs by props validate and translate. Invoke onMount
+   */
   componentDidMount() {
     const { validate, registerInputGroup, translate, onMount } = this.props,
           names = this.extractInputNames( validate );
@@ -47,12 +53,21 @@ export class InputGroupComponent extends React.Component {
     onMount && onMount( this );
   }
 
+  /**
+   * Get array of input validation messages
+   * @returns {String[]}
+   */
   getValidationMessages() {
     return this.inputs
       .map( input => input.getValidationMessage() )
       .filter( msg => Boolean( msg ) );
   }
 
+  /**
+   * Helper to update component state
+   * @param {String[]} errors
+   * @param {Boolean} valid
+   */
   updateState( errors, valid ) {
     this.setState({
       valid,
@@ -61,6 +76,11 @@ export class InputGroupComponent extends React.Component {
     });
   }
 
+  /**
+   * Get input by its name
+   * @param {String} name
+   * @returns {Input}
+   */
   getInputByName( name ) {
     if ( !this.inputs ) {
       return null;
@@ -68,6 +88,9 @@ export class InputGroupComponent extends React.Component {
     return this.inputs.find( input => ( input.name === name ));
   }
 
+  /**
+   * Check form validity and update the sate
+   */
   checkValidityAndUpdate() {
     const valid = this.checkValidity();
     if ( valid ) {
@@ -78,6 +101,10 @@ export class InputGroupComponent extends React.Component {
     return false;
   }
 
+  /**
+   * Get group actual validity by logical conjunction of all registered inputs
+   * @returns {Boolean}
+   */
   checkValidity() {
     this.valid = this.inputs.reduce( ( isValid, input ) => {
       return input.checkValidity() && isValid;
@@ -85,6 +112,12 @@ export class InputGroupComponent extends React.Component {
     return this.valid;
   }
 
+  /**
+   * Extract properties for delegation to generated element
+   *
+   * @param {Object} props
+   * @returns {Object}
+   */
   static normalizeTagProps( props ) {
     const whitelisted = { ...props };
     [ "validate" , "translate", "tag", "registerInputGroup", "onMount" ].forEach( prop => {
@@ -95,6 +128,10 @@ export class InputGroupComponent extends React.Component {
     return whitelisted;
   }
 
+   /**
+   * Render the component
+   * @returns {React.Component}
+   */
   render() {
     const { children, tag = "div", className } = this.props,
           Container = `${tag}`,

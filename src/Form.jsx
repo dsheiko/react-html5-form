@@ -4,6 +4,8 @@ import { FormContext } from "./Form/Context";
 
 export { InputGroup } from "./Form/InputGroup";
 
+const AUTOCOMPLETE_TIMEOUT = 50;
+
 export class Form extends React.Component {
 
   constructor( props ) {
@@ -33,8 +35,12 @@ export class Form extends React.Component {
     };
   }
 
+  /**
+   * Invoke onMount handler
+   */
   componentDidMount() {
     const { onMount } = this.props;
+    setTimeout(() => this.checkValidityAndUpdate(), AUTOCOMPLETE_TIMEOUT);
     onMount && onMount( this );
   }
 
@@ -44,7 +50,7 @@ export class Form extends React.Component {
   onSubmit( e ) {
     const { onSubmit } = this.props;
     e.preventDefault();
-    this.setState({ valid: this.checkValidity() });
+    this.checkValidityAndUpdateInputGroups();
     onSubmit && onSubmit.call( this, this );
   }
 
@@ -58,16 +64,39 @@ export class Form extends React.Component {
     }
   }
 
+  /**
+   * Check form validity and update every input group
+   */
+  checkValidityAndUpdateInputGroups() {
+    this.setState({ valid: this.checkValidity() });
+  }
 
+  /**
+   * Check form validity and update the component state
+   */
+  checkValidityAndUpdate() {
+    this.setState({ valid: this.checkValidity( "checkValidity" ) });
+  }
 
-  checkValidity() {
+  /**
+   * Get form actual validity by logical conjunction of all registered inputs
+   * @param {String} [groupMethod = "checkValidityAndUpdate"]
+   * @returns {Boolean}
+   */
+  checkValidity( groupMethod = "checkValidityAndUpdate" ) {
     this.valid = this.state.inputGroups.reduce( ( isValid, group ) => {
-      return group.checkValidityAndUpdate() && isValid;
+      const valid = group[ groupMethod ]();
+      return valid && isValid;
     }, true );
     this.valid || this.scrollIntoViewFirstInvalidInputGroup();
     return this.valid;
   }
 
+  /**
+   * Extract properties for delegation to generated form element
+   * @param {Object} props
+   * @returns {Object}
+   */
   static normalizeTagProps( props ) {
     const whitelisted = { ...props };
     [ "onSubmit", "onMount" ].forEach( prop => {
@@ -78,6 +107,10 @@ export class Form extends React.Component {
     return whitelisted;
   }
 
+  /**
+   * Render the component
+   * @returns {React.Component}
+   */
   render() {
     const { inputs, children } = this.props,
       { error, valid } = this.state,

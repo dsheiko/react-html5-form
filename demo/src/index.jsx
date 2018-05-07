@@ -10,17 +10,40 @@ async function onSubmit( form ) {
 };
 
 // Debounce for 50ms
-const onInput = debounce(( e, inputGroup ) => {
+const onInput = debounce(( e, inputGroup, form ) => {
+  // Update state only of input group in focus
   inputGroup.checkValidityAndUpdate();
+  // Update "valid" property of the form
+  form.checkValidityAndUpdate();
 }, 50 );
+
+const onShowErrors = ( e, form ) => {
+  e.preventDefault();
+  form.checkValidityAndUpdateInputGroups();
+};
+
+const validateDateTime = ( input ) => {
+  if ( input.current.value === "Choose..." ) {
+      input.setCustomValidity( `Please select ${input.current.title}` );
+      return false;
+  }
+  return true;
+};
 
 const MyForm = props => (
   <Form onSubmit={onSubmit} id="myform">
-  {({ error, valid }) => (
+  {({ error, valid, form }) => (
       <React.Fragment>
         <h2>Demo Form</h2>
 
-        { !valid && (<div className="alert alert-danger" role="alert">
+        <p>Form validity: &nbsp;
+        { valid
+          ? <span className="text-success">valid</span>
+          : <span className="text-danger">at least one input in invalid state</span> }&nbsp;
+        <button className="btn btn-info btn-sm" onClick={( e ) => onShowErrors( e, form ) }>update input groups</button>
+        </p>
+
+        { error && (<div className="alert alert-danger" role="alert">
             <strong>Oh snap!</strong> {error}
           </div>)
         }
@@ -35,21 +58,24 @@ const MyForm = props => (
           }}>
         {({ error, valid }) => (
 
-          <div className={`form-group ${!valid && "has-danger"}`}>
-            <label id="emailLabel" htmlFor="emailInput">Email address</label>
+          <div className="form-group">
+          <label id="emailLabel" htmlFor="emailInput">Email address</label>
             <input
               type="email"
               required
               name="email"
               aria-labelledby="emailLabel"
-              className="form-control"
+              className={`form-control ${!valid && "is-invalid"}`}
               id="emailInput"
               aria-describedby="emailHelp"
               placeholder="Enter email" />
 
-            { error && (<div>
-              <div className="form-control-feedback">{error}</div>
-            </div>)  }
+              { error && (<div className="invalid-feedback">{error}</div>)  }
+
+              <small className="form-text text-muted">
+                Group validates on submit event
+              </small>
+
           </div>
 
         )}
@@ -62,20 +88,26 @@ const MyForm = props => (
               patternMismatch: "Please enter a valid first name."
             }
           }}>
-        {({ errors, valid, inputGroup }) => (
-          <div className={`form-group ${!valid && "has-danger"}`}>
+        {({ error, valid, inputGroup }) => (
+          <div className="form-group">
             <label id="firstNameLabel" htmlFor="firstNameInput">First Name</label>
             <input
               pattern="^.{5,30}$"
               required
-              className="form-control"
+              className={`form-control ${!valid && "is-invalid"}`}
               id="firstNameInput"
               aria-labelledby="firstNameLabel"
               name="firstName"
-              onInput={( e ) => onInput( e, inputGroup ) }
+              onInput={( e ) => onInput( e, inputGroup, form ) }
               placeholder="Enter first name"/>
 
-            { errors.map( ( error, key ) => ( <div key={key} className="form-control-feedback">{error}</div> )) }
+            { error && (<div className="invalid-feedback">{error}</div>)  }
+
+            <small className="form-text text-muted">
+                Group validates as you are typing
+            </small>
+
+
 
           </div>
         )}
@@ -91,24 +123,57 @@ const MyForm = props => (
           }
         }}>
         {({ error, valid }) => (
-          <div className={`form-group ${!valid && "has-danger"}`}>
+          <div className="form-group">
             <label id="vatIdLabel" htmlFor="vatIdInput">VAT Number (optional)</label>
             <input
-              className="form-control"
+              className={`form-control ${!valid && "is-invalid"}`}
               id="vatIdInput"
               aria-labelledby="vatIdLabel"
               name="vatId"
               placeholder="Enter VAT Number"/>
 
-            { error && (<div>
-              <div className="form-control-feedback">{error}</div>
-            </div>)  }
+            { error && (<div className="invalid-feedback">{error}</div>)  }
+
+          <small className="form-text text-muted">
+                Group validates on submit event
+            </small>
 
           </div>
         )}
         </InputGroup>
 
-        <button  className="btn btn-primary" type="submit">Submit</button>
+        <InputGroup validate={{ "day": validateDateTime, "month": validateDateTime }}>
+        {({ errors, valid }) => (
+          <div className="form-group">
+
+          <div className="form-row">
+            <div className="form-group col-md-6">
+               <label htmlFor="selectDay">Day</label>
+               <select name="day" id="selectDay" title="Day" className={`form-control ${!valid && "is-invalid"}`}>
+                  <option>Choose...</option>
+                  <option>...</option>
+               </select>
+            </div>
+            <div className="form-group col-md-6">
+              <label htmlFor="selectMonth">Month</label>
+              <select name="month" id="selectMonth"  title="Month" className={`form-control ${!valid && "is-invalid"}`}>
+                  <option>Choose...</option>
+                  <option>...</option>
+              </select>
+            </div>
+          </div>
+
+          { errors.map( ( error, key ) => ( <div key={key} className="alert alert-danger">{error}</div> )) }
+
+          <small className="form-text text-muted">
+              Group validates on submit event
+          </small>
+
+          </div>
+        )}
+        </InputGroup>
+
+        <button className="btn btn-primary" type="submit">Submit</button>
       </React.Fragment>
     )}
   </Form>

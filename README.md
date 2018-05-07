@@ -42,7 +42,8 @@ Represents form
 
 ### API
 - `scrollIntoViewFirstInvalidInputGroup()` - scroll first input group in invalid state into view (happens automatically onSubmit)
-- `checkValidity()` - returns boolean truthy when all the registered input groups in valid state
+- `checkValidityAndUpdateInputGroups()` - check form validity and update every input group
+- `checkValidityAndUpdate()` - check form validity and update only form state (without updating input groups)
 - `setError( message = "")` - set form scope error message
 
 ### Scope parameters
