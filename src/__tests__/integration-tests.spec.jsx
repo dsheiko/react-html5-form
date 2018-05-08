@@ -4,6 +4,10 @@ import { Form, InputGroup } from "../Form";
 
 const FIX_TEXT = "TEXT";
 
+const onMountCheckValidity = ( form ) => {
+  form.checkValidityAndUpdateInputGroups();
+};
+
 const getValidationMessage = ( inputGroup ) => {
    inputGroup.checkValidityAndUpdate();
    const input = inputGroup.getInputByName( "test" );
@@ -37,6 +41,7 @@ const FixtureEmailFieldset = ({ error, valid, form }) => (
     }
     <InputGroup
           tag="fieldset"
+          name="emailGroup"
           validate={[ "email" ]}
           translate={{
         email: {
@@ -81,15 +86,28 @@ describe("<Form />", () => {
         expect(getByTestId( "form" )).not.toBeNull();
     });
 
-    it("invokes onMount", () => {
+    it("invokes onMount", ( done ) => {
         const onMount = ( form ) => {
           expect( form ).not.toBeNull();
+          done();
         };
         const { getByTestId } = render(
             <Form data-testid="form" onMount={onMount}>
                { props => <FixtureSimpleFormContent {...props} /> }
             </Form>,
         );
+    });
+
+    it("invokes onUpdate", ( done ) => {
+        const onUpdate = ( form ) => {
+          expect( form ).not.toBeNull();
+          done();
+        };
+        render(<Form data-testid="form" onMount={onMountCheckValidity} onUpdate={onUpdate}>
+            { () => (<InputGroup tag="fieldset" name="emailGroup" validate={[ "email" ]}>
+            {() => ( <input type="email" required name="email" defaultValue="no-email" />  )}
+            </InputGroup>) }
+          </Form>);
     });
 
     it("validates on submit", () => {
@@ -120,9 +138,10 @@ describe("<Form />", () => {
     });
 
     describe("checkValidityAndUpdate", () => {
-      it("does not break on call", () => {
+      it("does not break on call", ( done ) => {
         const onMount = ( form ) => {
           expect(() => form.checkValidityAndUpdate()).not.toThrow();
+          done();
         };
         const { getByTestId } = render(
             <Form data-testid="form" onMount={onMount}>
@@ -131,6 +150,86 @@ describe("<Form />", () => {
         );
       });
     });
+
+    describe("submit", () => {
+      it("calls HTML element's submit", ( done ) => {
+        const spy = jest.fn();
+        const onMount = ( form ) => {
+          form.form.current = { submit: spy };
+          form.submit();
+          expect( spy ).toHaveBeenCalledTimes( 1 );
+          done();
+        };
+        const component = render(<Form data-testid="form" onMount={onMount}>
+               { props => <FixtureSimpleFormContent {...props} /> }
+            </Form>);
+      });
+    });
+
+
+    describe("debugInputGroups", () => {
+      it("get all groups", ( done ) => {
+        const onUpdate = ( form ) => {
+          const debug =  form.debugInputGroups();
+          expect( debug[0].name ).toEqual( "emailGroup" );
+          expect( debug[0].valid ).toEqual( false );
+          done();
+        };
+        render(<Form data-testid="form" onMount={onMountCheckValidity} onUpdate={onUpdate}>
+              { () => (<InputGroup tag="fieldset" name="emailGroup" validate={[ "email" ]}>
+              {() => ( <input type="email" required name="email" defaultValue="no-email" />  )}
+              </InputGroup>) }
+            </Form>);
+      });
+      it("get group info by index", ( done ) => {
+        const onUpdate = ( form ) => {
+          const debug =  form.debugInputGroups( 0 );
+          expect( debug.name ).toEqual( "emailGroup" );
+          expect( debug.valid ).toEqual( false );
+          done();
+        };
+        render(<Form data-testid="form" onMount={onMountCheckValidity} onUpdate={onUpdate}>
+              { () => (<InputGroup tag="fieldset" name="emailGroup" validate={[ "email" ]}>
+              {() => ( <input type="email" required name="email" defaultValue="no-email" />  )}
+              </InputGroup>) }
+            </Form>);
+      });
+
+      it("get group with no name", ( done ) => {
+        const onUpdate = ( form ) => {
+          const debug =  form.debugInputGroups( 0 );
+          expect( debug.name ).toEqual( "undefined" );
+          expect( debug.valid ).toEqual( false );
+          done();
+        };
+        render(<Form data-testid="form" onMount={onMountCheckValidity} onUpdate={onUpdate}>
+              { () => (<InputGroup tag="fieldset" validate={[ "email" ]}>
+              {() => ( <input type="email" required name="email" defaultValue="no-email" />  )}
+              </InputGroup>) }
+            </Form>);
+      });
+    });
+
+    describe("scrollIntoViewFirstInvalidInputGroup", () => {
+      it("calls HTML element's scrollIntoView", ( done ) => {
+        const spy = jest.fn();
+        const onUpdate = ( form ) => {
+          const group = form.getFirstInvalidInputGroup();
+          group.inputGroup.current = { scrollIntoView: spy };
+          form.scrollIntoViewFirstInvalidInputGroup();
+          expect( spy ).toHaveBeenCalledTimes( 1 );
+          done();
+        };
+        render(<Form data-testid="form" onMount={onMountCheckValidity} onUpdate={onUpdate}>
+              { props => (<InputGroup tag="fieldset" name="emailGroup" validate={[ "email" ]}>
+              {() => ( <input type="email" required name="email" defaultValue="no-email" />  )}
+              </InputGroup>) }
+            </Form>);
+      });
+    });
+
+
+
 
   });
 });
@@ -156,9 +255,10 @@ describe("<InputGroup />", () => {
     });
 
 
-    it("accepts custom validator", () => {
+    it("accepts custom validator", ( done ) => {
         const onMount = ( inputGroup ) => {
           inputGroup.checkValidityAndUpdate();
+          done();
         };
         const { queryByTestId } = render(
             <Form>
@@ -176,9 +276,10 @@ describe("<InputGroup />", () => {
         expect(queryByTestId( "inputGroup" )).not.toBeNull();
     });
 
-    it("translate default validaiton messages", () => {
+    it("translate default validaiton messages", ( done ) => {
         const onMount = ( inputGroup ) => {
                 expect( inputGroup.getValidationMessages() ).toEqual([ FIX_TEXT ]);
+                done();
               },
               translate = { email: { valueMissing: FIX_TEXT } };
         const { queryByTestId } = render(
@@ -196,9 +297,11 @@ describe("<InputGroup />", () => {
         );
     });
 
-    it("invokes onMount prop", () => {
+
+    it("invokes onMount prop", ( done ) => {
         const onMount = ( inputGroup ) => {
-          expect(inputGroup).not.toBeNull();
+          expect( inputGroup ).not.toBeNull();
+          done();
         };
         const { queryByTestId } = render(
             <Form>
@@ -213,10 +316,26 @@ describe("<InputGroup />", () => {
         );
     });
 
-    it("does not throw when el not found", () => {
+    it("invokes onUpdate", ( done ) => {
+        const onUpdate = ( inputGroup ) => {
+          expect( inputGroup ).not.toBeNull();
+          done();
+        };
+        const onMount = ( form ) => {
+          form.checkValidityAndUpdateInputGroups();
+        };
+        const { getByTestId } = render(<Form data-testid="form" onMount={onMount}>
+              { () => (<InputGroup tag="fieldset" validate={[ "email" ]} onUpdate={onUpdate}>
+              {() => ( <input type="email" data-testid="input" required name="email" defaultValue="no-email"  />  )}
+              </InputGroup>) }
+            </Form>);
+      });
+
+    it("does not throw when el not found", ( done ) => {
         const onMount = ( inputGroup ) => {
           inputGroup.checkValidityAndUpdate();
           expect(() => inputGroup.getInputByName("email")).not.toThrow();
+          done();
         };
         const { queryByTestId } = render(
             <Form>
@@ -238,10 +357,11 @@ describe("<InputGroup />", () => {
 
 describe("Input", () => {
   describe("current", () => {
-    it("contains HTML element", () => {
+    it("contains HTML element", ( done ) => {
         const onMount = ( inputGroup ) => {
           const input = inputGroup.getInputByName( "email" );
           expect( input.current.value ).toEqual( FIX_TEXT );
+          done();
         };
         const { queryByTestId } = render(
             <Form>
@@ -260,10 +380,11 @@ describe("Input", () => {
 
   describe("assignValidationMessage()", () => {
 
-    it( "throws when invalid property", () => {
+    it( "throws when invalid property", ( done ) => {
         const onMount = ( inputGroup ) => {
              const input = inputGroup.getInputByName( "test" );
              expect( () => input.assignValidationMessage("foo", "bar") ).toThrowError();
+             done();
         };
         const { queryByTestId } = render(
             <Form>
@@ -281,71 +402,77 @@ describe("Input", () => {
 
   describe("getValidationMessage()", () => {
 
-    it( "returns unified message for valueMissing", () => {
+    it( "returns unified message for valueMissing", ( done ) => {
         const onMount = ( inputGroup ) => {
           const input = inputGroup.getInputByName( "test" ),
                 res = input.getValidationMessage({ valueMissing: true });
           expect( res ).toEqual( "Please fill out this field." );
+          done();
         };
         const { queryByTestId } = render(
             <FixtureTestInput onMount={onMount} />
         );
     });
 
-    it( "returns unified message for rangeOverflow", () => {
+    it( "returns unified message for rangeOverflow", ( done ) => {
         const onMount = ( inputGroup ) => {
           const input = inputGroup.getInputByName( "test" );
           input.current.max = 100;
           const res = input.getValidationMessage({ rangeOverflow: true });
           expect( res ).toEqual( "Value must be less than or equal to 100." );
+          done();
         };
         const { queryByTestId } = render(
             <FixtureTestInput onMount={onMount} />
         );
     });
 
-    it( "returns unified message for rangeUnderflow", () => {
+    it( "returns unified message for rangeUnderflow", ( done ) => {
         const onMount = ( inputGroup ) => {
           const input = inputGroup.getInputByName( "test" );
           input.current.min = 100;
           const res = input.getValidationMessage({ rangeUnderflow: true });
           expect( res ).toEqual( "Value must be greater than or equal to 100." );
+          done();
         };
         const { queryByTestId } = render(
             <FixtureTestInput onMount={onMount} />
         );
     });
 
-    it( "returns unified message for tooLong", () => {
+    it( "returns unified message for tooLong", ( done ) => {
         const onMount = ( inputGroup ) => {
           const input = inputGroup.getInputByName( "test" );
           input.current.maxlength = 100;
           const res = input.getValidationMessage({ tooLong: true });
           expect( res ).toEqual( "Value must be less than 100 length." );
+          done();
         };
         const { queryByTestId } = render(
             <FixtureTestInput onMount={onMount} />
         );
     });
 
-    it( "returns unified message for tooShort", () => {
+    it( "returns unified message for tooShort", ( done ) => {
         const onMount = ( inputGroup ) => {
           const input = inputGroup.getInputByName( "test" );
           input.current.minlength = 100;
           const res = input.getValidationMessage({ tooShort: true });
           expect( res ).toEqual( "Value must be more than 100 length." );
+          done();
         };
         const { queryByTestId } = render(
             <FixtureTestInput onMount={onMount} />
         );
     });
 
-    it( "returns unified message for typeMismatch", () => {
+    it( "returns unified message for typeMismatch", ( done ) => {
         const onMount = ( inputGroup ) => {
           const input = inputGroup.getInputByName( "test" );
           input.current.type = "email";
           const res = input.getValidationMessage({ typeMismatch: true });
           expect( res ).toEqual( "Value is not a valid email." );
+          done();
         };
         const { queryByTestId } = render(
             <FixtureTestInput onMount={onMount} />
@@ -353,9 +480,10 @@ describe("Input", () => {
     });
 
 
-    it( "returns translated value for rangeUnderflow", () => {
+    it( "returns translated value for rangeUnderflow", ( done ) => {
         const onMount = ( inputGroup ) => {
                 expect( getValidationMessage( inputGroup ) ).toEqual( FIX_TEXT );
+                done();
               },
               translate = {
                 "test": {

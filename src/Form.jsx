@@ -36,16 +36,30 @@ export class Form extends React.Component {
   }
 
   /**
+   * Invoke onUpdate handler
+   * @param {Object} prevProps
+   * @parma {Object} prevState
+   */
+  componentDidUpdate( prevProps, prevState ) {
+    const { onUpdate, inputGroups } = this.props;
+    if ( onUpdate && this.state.inputGroups.length && this.state.valid !== prevState.valid ) {
+      onUpdate( this );
+    }
+  }
+
+  /**
    * Invoke onMount handler
    */
   componentDidMount() {
     const { onMount } = this.props;
-    setTimeout(() => this.checkValidityAndUpdate(), AUTOCOMPLETE_TIMEOUT);
-    onMount && onMount( this );
+    setTimeout(() => {
+      onMount ? onMount( this ) : this.checkValidityAndUpdate();
+    }, AUTOCOMPLETE_TIMEOUT);
   }
 
   /**
    * Abstract method to be overriden by a concrete implementation
+   * @param {Event} e
    */
   onSubmit( e ) {
     const { onSubmit } = this.props;
@@ -62,10 +76,35 @@ export class Form extends React.Component {
   }
 
   /**
+   * Find the first input group in error state
+   * @returns {InputGroup}
+   */
+  getFirstInvalidInputGroup() {
+    return this.state.inputGroups.find( group => !group.valid );
+  }
+
+  /**
+   * Get debug info about registered input groups
+   * @param {Number} inx
+   * @returns {Object}
+   */
+  debugInputGroups( inx = null ) {
+    const debug = this.state.inputGroups.map( inputGroup => ({
+      name: inputGroup.inputGroup.current.name || "undefined",
+      valid: inputGroup.checkValidity(),
+      inputs: inputGroup.inputs.map( input => ({
+        name: input.name,
+        valid: input.checkValidity()
+      }))
+    }));
+    return inx === null ? debug : debug[ inx ];
+  }
+
+  /**
    * Scroll the first errored input group into view
    */
   scrollIntoViewFirstInvalidInputGroup() {
-    const firstInvalid = this.state.inputGroups.find( group => !group.valid );
+    const firstInvalid = this.getFirstInvalidInputGroup();
     if ( firstInvalid && "scrollIntoView" in firstInvalid.inputGroup.current ) {
       firstInvalid.inputGroup.current.scrollIntoView();
     }
@@ -75,7 +114,7 @@ export class Form extends React.Component {
    * Check form validity and update every input group
    */
   checkValidityAndUpdateInputGroups() {
-    this.setState({ valid: this.checkValidity() });
+    this.setState({ valid: this.checkValidity( "checkValidityAndUpdate" ) });
   }
 
   /**
@@ -106,7 +145,7 @@ export class Form extends React.Component {
    */
   static normalizeTagProps( props ) {
     const whitelisted = { ...props };
-    [ "onSubmit", "onMount" ].forEach( prop => {
+    [ "onSubmit", "onMount", "onUpdate" ].forEach( prop => {
       if ( prop in whitelisted ) {
         delete whitelisted[ prop ];
       }
@@ -137,6 +176,7 @@ export class Form extends React.Component {
 Form.propTypes = {
   onSubmit: PropTypes.func,
   onMount: PropTypes.func,
+  onUpdate: PropTypes.func,
   tabindex: PropTypes.string,
   title: PropTypes.string,
   id: PropTypes.string,

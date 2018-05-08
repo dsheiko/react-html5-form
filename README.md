@@ -38,6 +38,7 @@ Represents form
 ### Props
 - `<Function>` `onSubmit` - form submit handler
 - `<Function>` `onMount` - callback that gets invoked in `componentDidMount()`, it receives component instance as parameter
+- `<Function>` `onUpdate` - callback that gets invoked when form ready (all input groups registered) and when it changes validity state. It's intended to be used with Redux to update tree state
 - all the attributes of Form HTML element
 
 ### API
@@ -46,6 +47,7 @@ Represents form
 - `checkValidityAndUpdate()` - check form validity and update only form state (without updating input groups)
 - `setError( message = "")` - set form scope error message
 - `submit()` - submit form
+- `debugInputGroups( inx = null )` - get debug info about all registered inputs, or one matching given index
 
 ### Scope parameters
 - `<String>` `error` - error message set with `setError()`
@@ -139,6 +141,7 @@ access the API by reference like `form.setError`
 <InputGroup tag="fieldset" ... />
 ```
 - `<Function>` `onMount` - callback that gets invoked in `componentDidMount()`, it receives component instance as parameter
+- `<Function>` `onUpdate` - callback that gets invoked when form ready (all input groups registered) and when it changes validity state. It's intended to be used with Redux to update tree state
 - all the attributes of Form HTML element
 
 ### API

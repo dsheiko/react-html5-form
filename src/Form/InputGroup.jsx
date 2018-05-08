@@ -28,6 +28,18 @@ export class InputGroupComponent extends React.Component {
     return Object.keys( validate );
   }
 
+   /**
+   * Invoke onUpdate handler
+   * @param {Object} prevProps
+   * @parma {Object} prevState
+   */
+  componentDidUpdate( prevProps, prevState ) {
+    const { onUpdate } = this.props;
+    if ( onUpdate && this.state.valid !== prevState.valid ) {
+      onUpdate( this );
+    }
+  }
+
   /**
    * Register inputs by props validate and translate. Invoke onMount
    */
@@ -121,7 +133,7 @@ export class InputGroupComponent extends React.Component {
    */
   static normalizeTagProps( props ) {
     const whitelisted = { ...props };
-    [ "validate" , "translate", "tag", "registerInputGroup", "onMount" ].forEach( prop => {
+    [ "validate" , "translate", "tag", "registerInputGroup", "onMount", "onUpdate" ].forEach( prop => {
       if ( prop in whitelisted ) {
         delete whitelisted[ prop ];
       }
@@ -156,6 +168,7 @@ InputGroup.propTypes = {
     PropTypes.array
   ]).isRequired,
   registerInputGroup: PropTypes.func,
+  onUpdate: PropTypes.func,
   onMount: PropTypes.func,
   translate: PropTypes.object,
   tag: PropTypes.string,

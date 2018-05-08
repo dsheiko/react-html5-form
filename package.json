@@ -48,13 +48,13 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "jest": "^22.4.3",
-    "jscs": "^3.0.7",
-    "react-testing-library": "^2.5.1"
+    "jscs": "^3.0.7"
   },
   "dependencies": {
     "prop-types": "^15.6.1",
     "react": "^16.3.2",
-    "react-dom": "^16.3.2"
+    "react-dom": "^16.3.2",
+    "react-test-renderer": "^16.3.2"
   },
   "jest": {
     "coverageDirectory": "./coverage/",
