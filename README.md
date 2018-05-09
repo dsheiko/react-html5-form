@@ -21,7 +21,7 @@ With `InputGroup` we define a fieldset that contains one or more semantically re
 We register inputs within `InputGroup` with `validate` prop. There we can specify a validator function, which will extend HTMP5 form validation logic. Very easily we can provide mapping for standard validation message (`translate` prop).
 
 
-![react-html5-form in a single picture](../docs/react-html5-form.png)
+![react-html5-form in a single picture](https://github.com/dsheiko/react-html5-form/raw/master/docs/react-html5-form.png)
 
 
 ## Installation
