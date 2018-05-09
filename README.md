@@ -36,10 +36,10 @@ You can see the component in action [live demo](https://dsheiko.github.io/react-
 Represents form
 
 ### Props
-- `<Function>` `onSubmit` - form submit handler
-- `<Function>` `onMount` - callback that gets invoked in `componentDidMount()`, it receives component instance as parameter
-- `<Function>` `onUpdate` - callback that gets invoked when form ready (all input groups registered) and when it changes validity state. It's intended to be used with Redux to update tree state
-- all the attributes of Form HTML element
+- `<Function>` `onSubmit` - (OPTIONAL) form submit handler
+- `<Function>` `onMount` - (OPTIONAL) callback that gets invoked in `componentDidMount()`, it receives component instance as parameter
+- `<Function>` `onUpdate` - (OPTIONAL) callback that gets invoked when form ready (all input groups registered) and when it changes validity state. It's intended to be used with Redux to update tree state
+- any attributes of Form HTML element
 
 ### API
 - `scrollIntoViewFirstInvalidInputGroup()` - scroll first input group in invalid state into view (happens automatically onSubmit)
@@ -47,6 +47,7 @@ Represents form
 - `checkValidityAndUpdate()` - check form validity and update only form state (without updating input groups)
 - `setError( message = "")` - set form scope error message
 - `submit()` - submit form
+- `getRef()` - get `Ref` instance pointed to the generated `FORM` element. Thus if you need to access the DOM node, you go with `form.getRef().current`
 - `debugInputGroups( inx = null )` - get debug info about all registered inputs, or one matching given index
 
 ### Scope parameters
@@ -108,7 +109,7 @@ access the API by reference like `form.setError`
 `InputGroup` defines scope and API for a group of arbitrary inputs registered with `validate` prop. `InputGroup` exposes in the scope parameters that can be used to toggle group validation message(s), group state representation and to access the component API
 
 ### Props
-- <Object|Array> `validate` - register inputs to the group. Accepts either array of input names (to match `[name=*]`) or plain object out of pairs `name: custom validator`
+- <Object|Array> `validate` - (REQUIRED) register inputs to the group. Accepts either array of input names (to match `[name=*]`) or plain object out of pairs `name: custom validator`
 ```jsx
 // Group of a single input
 <InputGroup validate={[ "email" ]} />
@@ -125,7 +126,7 @@ access the API by reference like `form.setError`
           }
         }}>
 ```
-- <Object> `translate` - set custom messages for validation constraints (see [ValidityState Properties](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState))
+- <Object> `translate` - (OPTIONAL) set custom messages for validation constraints (see [ValidityState Properties](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState))
 ```jsx
  <InputGroup
           ...
@@ -136,19 +137,20 @@ access the API by reference like `form.setError`
             }
           }}>
 ```
-- <String> `tag` - define tag for the generated container HTML element (by default `div`)
+- <String> `tag` - (OPTIONAL) define tag for the generated container HTML element (by default `div`)
 ```jsx
 <InputGroup tag="fieldset" ... />
 ```
-- `<Function>` `onMount` - callback that gets invoked in `componentDidMount()`, it receives component instance as parameter
-- `<Function>` `onUpdate` - callback that gets invoked when form ready (all input groups registered) and when it changes validity state. It's intended to be used with Redux to update tree state
-- all the attributes of Form HTML element
+- `<Function>` `onMount` - (OPTIONAL) callback that gets invoked in `componentDidMount()`, it receives component instance as parameter
+- `<Function>` `onUpdate` - (OPTIONAL) callback that gets invoked when form ready (all input groups registered) and when it changes validity state. It's intended to be used with Redux to update tree state
+- any attributes of HTML element
 
 ### API
 - `checkValidityAndUpdate()` - run `checkValidity()` and update the input group according to the actual validity state
 - `getInputByName( name )` -  access input fo the group by given input name
 - `getValidationMessages()` - get list of all validation messages within the group
 - `checkValidity()` - find out if the input group has not inputs in invalid state
+- `getRef()` - get `Ref` instance pointed to the generated element. Thus if you need to access the DOM node, you go with `inputGroup.getRef().current`
 
 ### Scope parameters
 - `<String>` `error` - validation message for the first invalid input

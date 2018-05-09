@@ -17,6 +17,13 @@ export class InputGroupComponent extends React.Component {
   }
 
   /**
+   * Shortcut to access Ref on bounding DOM node
+   */
+  getRef() {
+    return this.inputGroup;
+  }
+
+  /**
    * Helper to extract input names for both syntaxes valid for validate prop
    * @param {*} validate
    * @returns {Array}

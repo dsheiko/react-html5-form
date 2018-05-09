@@ -72,7 +72,14 @@ export class Form extends React.Component {
    * Shortcut to submit form
    */
   submit() {
-    this.form.current.submit();
+    this.getRef().current.submit();
+  }
+
+  /**
+   * Shortcut to access Ref on bounding DOM node
+   */
+  getRef() {
+    return this.form;
   }
 
   /**

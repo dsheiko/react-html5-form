@@ -155,7 +155,7 @@ describe("<Form />", () => {
       it("calls HTML element's submit", ( done ) => {
         const spy = jest.fn();
         const onMount = ( form ) => {
-          form.form.current = { submit: spy };
+          form.getRef().current = { submit: spy };
           form.submit();
           expect( spy ).toHaveBeenCalledTimes( 1 );
           done();
@@ -215,7 +215,7 @@ describe("<Form />", () => {
         const spy = jest.fn();
         const onUpdate = ( form ) => {
           const group = form.getFirstInvalidInputGroup();
-          group.inputGroup.current = { scrollIntoView: spy };
+          group.getRef().current = { scrollIntoView: spy };
           form.scrollIntoViewFirstInvalidInputGroup();
           expect( spy ).toHaveBeenCalledTimes( 1 );
           done();
