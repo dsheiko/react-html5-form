@@ -6,8 +6,5 @@ notifications:
   email: false
 node_js:
   - '9'
-install:
-  - npm 
 script:
-  - npm install
   - npm run test:coverage 
