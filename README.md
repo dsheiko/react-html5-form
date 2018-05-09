@@ -98,7 +98,7 @@ const MyForm = props => (
   <Form onSubmit={onSubmit} id="myform">
   {({ error, valid, form }) => (
       <>
-      { !valid && (<div className="alert alert-danger" role="alert">
+      { error && (<div className="alert alert-danger" role="alert">
             <strong>Oh snap!</strong> {error}
           </div>)
       }
@@ -184,23 +184,18 @@ import { Form, InputGroup } from "Form";
     }}>
   {({ error, valid }) => (
 
-    <div className={`form-group ${!valid && "has-danger"}`}>
-      <label id="emailLabel" htmlFor="emailInput">Email address</label>
-      <input
-        type="email"
-        required
-        name="email"
-        aria-labelledby="emailLabel"
-        className="form-control"
-        id="emailInput"
-        aria-describedby="emailHelp"
-        placeholder="Enter email" />
+          <div className="form-group">
+          <label htmlFor="emailInput">Email address</label>
+            <input
+              type="email"
+              required
+              name="email"
+              className={`form-control ${!valid && "is-invalid"}`}
+              id="emailInput"
+              placeholder="Enter email" />
 
-      { error && (<div>
-        <div className="form-control-feedback">{error}</div>
-      </div>)  }
-    </div>
-
+              { error && (<div className="invalid-feedback">{error}</div>)  }
+          </div>
   )}
   </InputGroup>
 ```
@@ -210,41 +205,71 @@ It means that during the validation the input has no value while having constrai
 
 #### Custom validators
 ```jsx
-    <InputGroup validate={{
+      <InputGroup validate={{
           "vatId": ( input ) => {
             if ( !input.current.value.startsWith( "DE" ) ) {
-              input.setCustomValidity( "Code must start with DE" );
+              input.setCustomValidity( "Code must start with DE." );
               return false;
             }
             return true;
           }
         }}>
         {({ error, valid }) => (
-          <div className={`form-group ${!valid && "has-danger"}`}>
-            <label id="vatIdLabel" htmlFor="vatIdInput">VAT Number (optional)</label>
+          <div className="form-group">
+            <label htmlFor="vatIdInput">VAT Number (optional)</label>
             <input
-              className="form-control"
+              className={`form-control ${!valid && "is-invalid"}`}
               id="vatIdInput"
-              aria-labelledby="vatIdLabel"
               name="vatId"
               placeholder="Enter VAT Number"/>
 
-            { error && (<div>
-              <div className="form-control-feedback">{error}</div>
-            </div>)  }
+            { error && (<div className="invalid-feedback">{error}</div>)  }
+
+          </div>
+        )}
+      </InputGroup>
+```
+
+Here we define a custom validator for `vatId` input (via `validate` prop). The validator checks if the current input value starts with `"DE"`.
+If it dosn't we apply `setCustomValidity` method to set the input (and the group) in invalid state (the same as of HTML5 Constraint validation API).
+
+#### Group with multiple inputs
+
+```jsx
+    <InputGroup validate={{ "day": validateDateTime, "month": validateDateTime }}>
+        {({ errors, valid }) => (
+          <div className="form-group">
+
+          <div className="form-row">
+            <div className="form-group col-md-6">
+               <label htmlFor="selectDay">Day</label>
+               <select name="day" id="selectDay" title="Day" className={`form-control ${!valid && "is-invalid"}`}>
+                  <option>Choose...</option>
+                  <option>...</option>
+               </select>
+            </div>
+            <div className="form-group col-md-6">
+              <label htmlFor="selectMonth">Month</label>
+              <select name="month" id="selectMonth"  title="Month" className={`form-control ${!valid && "is-invalid"}`}>
+                  <option>Choose...</option>
+                  <option>...</option>
+              </select>
+            </div>
+          </div>
+
+          { errors.map( ( error, key ) => ( <div key={key} className="alert alert-danger">{error}</div> )) }
 
           </div>
         )}
     </InputGroup>
 ```
 
-Here we define a custom validator for `vatId` input (via `validate` prop). The validator checks if the current input value starts with `"DE"`.
-If it dosn't we apply `setCustomValidity` method to set the input (and the group) in invalid state (the same as of HTML5 Constraint validation API).
+On validation we receives `errors` array that contains validation messages for all the inputs registered in the group. So we can display the messages within the group container.
 
 
 #### On-the-fly validation
 
-Let's first define the onInput event handler:
+Let's first define the `onInput` event handler:
 ```js
 const onInput = ( e, inputGroup ) => {
   inputGroup.checkValidityAndUpdate();
@@ -255,33 +280,38 @@ We use `checkValidityAndUpdate` method to actualize validity state and update th
 Now we subscribe the component:
 
 ```jsx
-    <InputGroup validate={[ "firstName" ]}>
-        {({ errors, valid, inputGroup }) => (
-          <div className={`form-group ${!valid && "has-danger"}`}>
-            <label id="firstNameLabel" htmlFor="firstNameInput">First Name</label>
+    <InputGroup
+          validate={[ "firstName" ]}
+          translate={{
+            firstName: {
+              patternMismatch: "Please enter a valid first name."
+            }
+          }}>
+        {({ error, valid, inputGroup }) => (
+          <div className="form-group">
+            <label htmlFor="firstNameInput">First Name</label>
             <input
               pattern="^.{5,30}$"
               required
-              className="form-control"
+              className={`form-control ${!valid && "is-invalid"}`}
               id="firstNameInput"
-              aria-labelledby="firstNameLabel"
               name="firstName"
-              onInput={( e ) => onInput( e, inputGroup ) }
+
+              onInput={( e ) => onInput( e, inputGroup, form ) }
               placeholder="Enter first name"/>
 
-            { errors.map( ( error, key ) => ( <div key={key} className="form-control-feedback">{error}</div> )) }
-
+            { error && (<div className="invalid-feedback">{error}</div>)  }
           </div>
         )}
-      </InputGroup>
+    </InputGroup>
 ```
 
-Here we delegate the handler reference to component instance like `onInput={( e ) => onInput( e, inputGroup ) }`
+Here while assigning event handler inline we delegate the instance of component to earlier created `onInput` function like `onInput={( e ) => onInput( e, inputGroup ) }`. Thus we can operate it when responding to the event.
 
 
 ## Input
 
-Represents input element.
+Represents input element within input group scope.
 
 ### API
 - `current` - input HTML element
