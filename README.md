@@ -235,6 +235,16 @@ If it dosn't we apply `setCustomValidity` method to set the input (and the group
 
 #### Group with multiple inputs
 
+```js
+const validateDateTime = ( input ) => {
+  if ( input.current.value === "Choose..." ) {
+      input.setCustomValidity( `Please select ${input.current.title}` );
+      return false;
+  }
+  return true;
+};
+```
+
 ```jsx
     <InputGroup validate={{ "day": validateDateTime, "month": validateDateTime }}>
         {({ errors, valid }) => (
