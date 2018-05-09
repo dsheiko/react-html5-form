@@ -35,6 +35,8 @@ npm i react-html5-form
 ## Demo
 
 You can see the component in action [live demo](https://dsheiko.github.io/react-html5-form/)
+- [source code](./demo/bootstrap/src/index.jsx) of example using HTML elements for inputs (styled with Bootstrap 4)
+- [source code](./demo/materialui/src/index.jsx) of example using read-made components for inputs (styled with MaterialUI.Next)
 
 ```js
 import { Form } from "Form";
