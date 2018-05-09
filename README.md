@@ -36,6 +36,10 @@ npm i react-html5-form
 
 You can see the component in action [live demo](https://dsheiko.github.io/react-html5-form/)
 
+```js
+import { Form } from "Form";
+```
+
 ## Form
 
 Represents form
@@ -112,6 +116,10 @@ access the API by reference like `form.setError`
 
 ## InputGroup
 `InputGroup` defines scope and API for a group of arbitrary inputs registered with `validate` prop. `InputGroup` exposes in the scope parameters that can be used to toggle group validation message(s), group state representation and to access the component API
+
+```js
+import { Form, InputGroup } from "Form";
+```
 
 ### Props
 - <Object|Array> `validate` - (REQUIRED) register inputs to the group. Accepts either array of input names (to match `[name=*]`) or plain object out of pairs `name: custom validator`
