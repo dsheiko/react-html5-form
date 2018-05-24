@@ -1,6 +1,6 @@
 {
   "name": "react-html5-form",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React components Form and InputGroup to connect form inputs to HTML5 Constraint Validation API",
   "main": "dist/Form.js",
   "scripts": {
@@ -58,6 +58,9 @@
   "jest": {
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
-    "coveragePathIgnorePatterns": [ "./node_modules/", "./dist" ]
+    "coveragePathIgnorePatterns": [
+      "./node_modules/",
+      "./dist"
+    ]
   }
 }
