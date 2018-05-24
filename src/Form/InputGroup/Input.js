@@ -1,24 +1,37 @@
-const VALIDITY_PROPS = [
-  "badInput",
-  "customError",
-  "patternMismatch",
-  "rangeOverflow",
-  "rangeUnderflow",
-  "stepMismatch",
-  "tooLong",
-  "tooShort",
-  "typeMismatch",
-  "valueMissing"
-];
+const DEFAULT_VALIDITY = {
+        badInput: false,
+        customError: false,
+        patternMismatch: false,
+        rangeOverflow: false,
+        rangeUnderflow: false,
+        stepMismatch: false,
+        tooLong: false,
+        tooShort: false,
+        typeMismatch: false,
+        valueMissing: false,
+        valid: true
+     };
 
 export class Input {
 
-  constructor({ el, name, customValidator, translate }) {
-    this.current = el;
+  constructor({ locator, name, customValidator, translate, parent }) {
+    this.locator = locator;
     this.name = name;
     this.customValidator = customValidator;
     this.assignedValidationMessages = {};
     this.applyValidationMessageMapping( translate );
+    this.parent = parent;
+    this.parent.updateStoreForInputValidity( name, DEFAULT_VALIDITY, "" );
+  }
+
+  get current() {
+    if ( !this.currentCache ) {
+      this.currentCache = this.locator();
+    }
+    if ( !this.currentCache ) {
+      this.parent.updateState([`Could not find selector [name="${this.name}"]`], false);
+    }
+    return this.currentCache;
   }
 
   /**
@@ -35,8 +48,27 @@ export class Input {
    * @returns {Boolean}
    */
   checkValidity() {
+    if ( !this.current ) {
+      return false;
+    }
     this.setCustomValidity();
-    return this.current.checkValidity() && this.customValidator( this );
+    const valid = this.current.checkValidity() && this.customValidator( this );
+    this.parent.updateStoreForInputValidity( this.name, this.getValidity(), this.getValidationMessage() );
+    return valid;
+  }
+
+  /**
+   * Get validity as a plain object
+   * @returns {Object}
+   */
+  getValidity() {
+    if ( !this.current ) {
+      return DEFAULT_VALIDITY;
+    }
+    return Object.keys( DEFAULT_VALIDITY ).reduce(( carry, prop ) => {
+      carry[ prop ] = this.current.validity[ prop ];
+      return carry;
+    }, {});
   }
 
   /**
@@ -58,7 +90,7 @@ export class Input {
    * @param {string} message
    */
   assignValidationMessage( prop, message ) {
-    if ( VALIDITY_PROPS.indexOf( prop ) === -1 ) {
+    if ( Object.keys( DEFAULT_VALIDITY ).indexOf( prop ) === -1 ) {
       throw new Error( `Invalid validity property ${prop}` );
     }
     this.assignedValidationMessages[ prop ] = message;
@@ -71,7 +103,7 @@ export class Input {
    * @returns {string|false}
    */
   getAssignedValidationMessage( validity ) {
-    const invalidProp = VALIDITY_PROPS.find( prop => validity[ prop ] );
+    const invalidProp = Object.keys( DEFAULT_VALIDITY ).find( prop => validity[ prop ] );
     return ( invalidProp && invalidProp in this.assignedValidationMessages ) ?
       this.assignedValidationMessages[ invalidProp ] : false;
   }
@@ -84,11 +116,15 @@ export class Input {
   * @returns {string}
   */
   getValidationMessage( validityState = null ) {
-    const validity = validityState || this.current.validity,
+    const validity = validityState || this.getValidity(),
           assignedMessage = this.getAssignedValidationMessage( validity );
 
     if ( assignedMessage ) {
       return assignedMessage;
+    }
+
+    if ( !this.current ) {
+      return "";
     }
 
     switch ( true ) {

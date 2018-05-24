@@ -1,0 +1,3 @@
+- 1.0.4
+  - Now it queries for Input node again when the node was destroyed by component update
+  - Added actions and reducer, so can be connected to Redux store

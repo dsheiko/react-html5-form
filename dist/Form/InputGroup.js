@@ -47,6 +47,8 @@ var _Input = require("./InputGroup/Input");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var counter = 0;
+
 var InputGroupComponent = exports.InputGroupComponent = function (_React$Component) {
   (0, _inherits3.default)(InputGroupComponent, _React$Component);
 
@@ -55,8 +57,10 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (InputGroupComponent.__proto__ || (0, _getPrototypeOf2.default)(InputGroupComponent)).call(this, props));
 
+    counter++, _this.id = "id" in props ? props.id : "__igroup" + counter;
     _this.inputGroup = _react2.default.createRef();
     _this.valid = true;
+
     _this.state = {
       valid: true,
       error: null,
@@ -65,7 +69,24 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
     return _this;
   }
 
+  /**
+   * Shortcut to access Ref on bounding DOM node
+   */
+
+
   (0, _createClass3.default)(InputGroupComponent, [{
+    key: "getRef",
+    value: function getRef() {
+      return this.inputGroup;
+    }
+
+    /**
+     * Helper to extract input names for both syntaxes valid for validate prop
+     * @param {*} validate
+     * @returns {Array}
+     */
+
+  }, {
     key: "extractInputNames",
     value: function extractInputNames(validate) {
       if (Array.isArray(validate)) {
@@ -73,6 +94,27 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
       }
       return (0, _keys2.default)(validate);
     }
+
+    /**
+    * Invoke onUpdate handler
+    * @param {Object} prevProps
+    * @parma {Object} prevState
+    */
+
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState) {
+      var onUpdate = this.props.onUpdate;
+
+      if (onUpdate && this.state.valid !== prevState.valid) {
+        onUpdate(this);
+      }
+    }
+
+    /**
+     * Register inputs by props validate and translate. Invoke onMount
+     */
+
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
@@ -82,7 +124,10 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
           validate = _props.validate,
           registerInputGroup = _props.registerInputGroup,
           translate = _props.translate,
+          onMount = _props.onMount,
+          updateStoreForInputGroupValidity = _props.updateStoreForInputGroupValidity,
           names = this.extractInputNames(validate);
+
 
       this.inputs = names.map(function (name) {
         var selector = "[name=\"" + name + "\"]",
@@ -90,19 +135,23 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
           return true;
         },
             tMap = translate && name in translate ? translate[name] : null,
-            el = _this2.inputGroup.current.querySelector(selector);
+            locator = function locator() {
+          return _this2.inputGroup.current.querySelector(selector);
+        };
 
-        if (!el) {
-          _this2.updateState(["Could not find selector " + selector], false);
-          return null;
-        }
-        return new _Input.Input({ el: el, name: name, customValidator: customValidator, translate: tMap });
-      }).filter(function (el) {
-        return Boolean(el);
+        return new _Input.Input({ locator: locator, name: name, customValidator: customValidator, translate: tMap, parent: _this2 });
       });
-
+      // Register input group in redux store
+      updateStoreForInputGroupValidity(this.id, true, []);
       registerInputGroup(this);
+      onMount && onMount(this);
     }
+
+    /**
+     * Get array of input validation messages
+     * @returns {String[]}
+     */
+
   }, {
     key: "getValidationMessages",
     value: function getValidationMessages() {
@@ -112,25 +161,58 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
         return Boolean(msg);
       });
     }
+
+    /**
+     * Update Redux store for input validity
+     * @param {string} name
+     * @param {Object} validity
+     * @param {string} validationMessage
+     */
+
+  }, {
+    key: "updateStoreForInputValidity",
+    value: function updateStoreForInputValidity(name, validity, validationMessage) {
+      this.props.updateStoreForInputValidity(this.id, name, validity, validationMessage);
+    }
+
+    /**
+     * Helper to update component state
+     * @param {String[]} errors
+     * @param {Boolean} valid
+     */
+
   }, {
     key: "updateState",
     value: function updateState(errors, valid) {
+      this.props.updateStoreForInputGroupValidity(this.id, valid, errors);
       this.setState({
         valid: valid,
         error: errors.length ? errors[0] : null,
         errors: errors
       });
     }
+
+    /**
+     * Get input by its name
+     * @param {String} name
+     * @returns {Input}
+     */
+
   }, {
     key: "getInputByName",
     value: function getInputByName(name) {
-      if (!this.inputs) {
+      if (!this.inputs || !this.inputs.length) {
         return null;
       }
       return this.inputs.find(function (input) {
         return input.name === name;
       });
     }
+
+    /**
+     * Check form validity and update the sate
+     */
+
   }, {
     key: "checkValidityAndUpdate",
     value: function checkValidityAndUpdate() {
@@ -142,6 +224,12 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
       this.updateState(this.getValidationMessages(), false);
       return false;
     }
+
+    /**
+     * Get group actual validity by logical conjunction of all registered inputs
+     * @returns {Boolean}
+     */
+
   }, {
     key: "checkValidity",
     value: function checkValidity() {
@@ -150,23 +238,54 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
       }, true);
       return this.valid;
     }
+
+    /**
+     * Extract properties for delegation to generated element
+     *
+     * @param {Object} props
+     * @returns {Object}
+     */
+
   }, {
     key: "render",
+
+
+    /**
+    * Render the component
+    * @returns {React.Component}
+    */
     value: function render() {
       var _props2 = this.props,
           children = _props2.children,
           _props2$tag = _props2.tag,
           tag = _props2$tag === undefined ? "div" : _props2$tag,
           className = _props2.className,
+          updateInputValidity = _props2.updateInputValidity,
+          formAction = _props2.formAction,
+          formState = _props2.formState,
           Container = "" + tag,
+          props = (0, _extends3.default)({ id: this.id }, this.props),
+          tagProps = InputGroupComponent.normalizeTagProps(props),
           args = (0, _extends3.default)({}, this.state, { inputGroup: this });
+
 
       return _react2.default.createElement(
         Container,
-        { ref: this.inputGroup, className: className },
+        (0, _extends3.default)({ ref: this.inputGroup }, tagProps),
         children(args),
         " "
       );
+    }
+  }], [{
+    key: "normalizeTagProps",
+    value: function normalizeTagProps(props) {
+      var whitelisted = (0, _extends3.default)({}, props);
+      ["validate", "translate", "tag", "registerInputGroup", "onMount", "onUpdate", "updateStoreForInputValidity", "updateStoreForInputGroupValidity"].forEach(function (prop) {
+        if (prop in whitelisted) {
+          delete whitelisted[prop];
+        }
+      });
+      return whitelisted;
     }
   }]);
   return InputGroupComponent;
@@ -179,14 +298,24 @@ var InputGroup = exports.InputGroup = function InputGroup(props) {
     _Context.FormContext.Consumer,
     null,
     function (_ref) {
-      var registerInputGroup = _ref.registerInputGroup;
-      return _react2.default.createElement(InputGroupComponent, (0, _extends3.default)({}, props, { registerInputGroup: registerInputGroup }));
+      var registerInputGroup = _ref.registerInputGroup,
+          updateStoreForInputGroupValidity = _ref.updateStoreForInputGroupValidity,
+          updateStoreForInputValidity = _ref.updateStoreForInputValidity;
+      return _react2.default.createElement(InputGroupComponent, (0, _extends3.default)({}, props, {
+        registerInputGroup: registerInputGroup,
+        updateStoreForInputValidity: updateStoreForInputValidity,
+        updateStoreForInputGroupValidity: updateStoreForInputGroupValidity
+
+      }));
     }
   );
 };
 
 InputGroup.propTypes = {
   validate: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.array]).isRequired,
+  registerInputGroup: _propTypes2.default.func,
+  onUpdate: _propTypes2.default.func,
+  onMount: _propTypes2.default.func,
   translate: _propTypes2.default.object,
   tag: _propTypes2.default.string,
   className: _propTypes2.default.string

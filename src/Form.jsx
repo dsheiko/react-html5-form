@@ -1,20 +1,29 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { FormContext } from "./Form/Context";
-
+// Exports
 export { InputGroup } from "./Form/InputGroup";
+export { html5form } from "./Redux/Reducers";
+import * as actions from "./Redux/Actions";
+export const actionCreators = actions;
 
 const AUTOCOMPLETE_TIMEOUT = 50;
+let counter = 0;
 
 export class Form extends React.Component {
 
   constructor( props ) {
     super( props );
     this.valid = false;
+    counter++,
+    this.id = props.id || `__form${counter}`;
+
+    this.updateStoreForFormValidity( true, "" );
+
     this.form = React.createRef();
     this.onSubmit = this.onSubmit.bind( this );
 
-    this.registerInputGroup = ( instance ) => {
+    const registerInputGroup = ( instance ) => {
       this.setState( state => {
         return {
           inputGroups: [ ...state.inputGroups, instance ]
@@ -22,7 +31,23 @@ export class Form extends React.Component {
       });
     };
 
+    const updateStoreForInputGroupValidity = ( groupId, valid, errors ) => {
+      const { formActions } = props;
+      formActions && formActions.updateInputGroupValidity(
+        this.id, groupId, valid, errors
+      );
+    };
+
+    const updateStoreForInputValidity = ( groupId, name, validity, validationMessage ) => {
+      const { formActions } = props;
+      formActions && formActions.updateInputValidity(
+        this.id, groupId, name, validity, validationMessage
+      );
+    };
+
+
     this.setError = ( message ) => {
+      this.updateStoreForFormValidity( message, this.valid );
       this.setState({ error: message });
     };
 
@@ -30,7 +55,9 @@ export class Form extends React.Component {
       valid: true,
       error: null,
       inputGroups: [],
-      registerInputGroup: this.registerInputGroup,
+      registerInputGroup,
+      updateStoreForInputGroupValidity,
+      updateStoreForInputValidity,
       setError: this.setError
     };
   }
@@ -55,6 +82,18 @@ export class Form extends React.Component {
     setTimeout(() => {
       onMount ? onMount( this ) : this.checkValidityAndUpdate();
     }, AUTOCOMPLETE_TIMEOUT);
+  }
+
+  /**
+   * Update Redux store for form validity
+   * @param {Boolean} valid
+   * @param {String} error
+   */
+  updateStoreForFormValidity( valid, error ) {
+    const { formActions } = this.props;
+    formActions && formActions.updateFormValidity(
+      this.id, valid, error
+    );
   }
 
   /**
@@ -121,14 +160,18 @@ export class Form extends React.Component {
    * Check form validity and update every input group
    */
   checkValidityAndUpdateInputGroups() {
-    this.setState({ valid: this.checkValidity( "checkValidityAndUpdate" ) });
+    const valid = this.checkValidity( "checkValidityAndUpdate" );
+    this.setState({ valid });
+    return valid;
   }
 
   /**
    * Check form validity and update the component state
    */
   checkValidityAndUpdate() {
-    this.setState({ valid: this.checkValidity( "checkValidity" ) });
+    const valid = this.checkValidity( "checkValidity" );
+    this.setState({ valid });
+    return valid;
   }
 
   /**
@@ -141,6 +184,7 @@ export class Form extends React.Component {
       const valid = group[ groupMethod ]();
       return valid && isValid;
     }, true );
+    this.updateStoreForFormValidity( this.valid, this.state.error );
     this.valid || this.scrollIntoViewFirstInvalidInputGroup();
     return this.valid;
   }
@@ -152,7 +196,7 @@ export class Form extends React.Component {
    */
   static normalizeTagProps( props ) {
     const whitelisted = { ...props };
-    [ "onSubmit", "onMount", "onUpdate" ].forEach( prop => {
+    [ "onSubmit", "onMount", "onUpdate", "formActions", "formState" ].forEach( prop => {
       if ( prop in whitelisted ) {
         delete whitelisted[ prop ];
       }
@@ -165,13 +209,13 @@ export class Form extends React.Component {
    * @returns {React.Component}
    */
   render() {
-    const { inputs, children } = this.props,
+    const { inputs, children, formActions, formState } = this.props,
       { error, valid } = this.state,
+      context = { ...this.state, formActions, formState },
       form = this,
       tagProps = Form.normalizeTagProps( this.props );
-
     return (
-      <FormContext.Provider value={this.state}>
+      <FormContext.Provider value={context}>
           <form noValidate ref={this.form} {...tagProps} onSubmit={this.onSubmit}>
             { children( { error, valid, form } ) }
           </form>

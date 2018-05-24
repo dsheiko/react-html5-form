@@ -3,12 +3,17 @@ import PropTypes from "prop-types";
 import { FormContext } from "./Context";
 import { Input } from "./InputGroup/Input";
 
+let counter = 0;
+
 export class InputGroupComponent extends React.Component {
 
   constructor( props ) {
     super( props );
+    counter++,
+    this.id = "id" in props ? props.id : `__igroup${counter}`;
     this.inputGroup = React.createRef();
     this.valid = true;
+
     this.state = {
       valid: true,
       error: null,
@@ -51,7 +56,7 @@ export class InputGroupComponent extends React.Component {
    * Register inputs by props validate and translate. Invoke onMount
    */
   componentDidMount() {
-    const { validate, registerInputGroup, translate, onMount } = this.props,
+    const { validate, registerInputGroup, translate, onMount, updateStoreForInputGroupValidity } = this.props,
           names = this.extractInputNames( validate );
 
     this.inputs = names
@@ -59,16 +64,12 @@ export class InputGroupComponent extends React.Component {
         const selector = `[name="${name}"]`,
               customValidator = ( name in validate ? validate[ name ] : () => true ),
               tMap = ( translate && name in translate ? translate[ name ] : null ),
-              el = this.inputGroup.current.querySelector( selector );
+              locator = () => this.inputGroup.current.querySelector( selector );
 
-        if ( !el ) {
-          this.updateState([`Could not find selector ${selector}`], false);
-          return null;
-        }
-        return new Input({ el, name, customValidator, translate: tMap });
-      })
-      .filter( el => Boolean( el ) );
-
+        return new Input({ locator, name, customValidator, translate: tMap, parent: this });
+      });
+    // Register input group in redux store
+    updateStoreForInputGroupValidity( this.id, true, [] );
     registerInputGroup( this );
     onMount && onMount( this );
   }
@@ -84,11 +85,22 @@ export class InputGroupComponent extends React.Component {
   }
 
   /**
+   * Update Redux store for input validity
+   * @param {string} name
+   * @param {Object} validity
+   * @param {string} validationMessage
+   */
+  updateStoreForInputValidity( name, validity, validationMessage ) {
+    this.props.updateStoreForInputValidity( this.id, name, validity, validationMessage );
+  }
+
+  /**
    * Helper to update component state
    * @param {String[]} errors
    * @param {Boolean} valid
    */
   updateState( errors, valid ) {
+    this.props.updateStoreForInputGroupValidity( this.id, valid, errors );
     this.setState({
       valid,
       error: ( errors.length ? errors[ 0 ] : null),
@@ -140,7 +152,14 @@ export class InputGroupComponent extends React.Component {
    */
   static normalizeTagProps( props ) {
     const whitelisted = { ...props };
-    [ "validate" , "translate", "tag", "registerInputGroup", "onMount", "onUpdate" ].forEach( prop => {
+    [ "validate",
+      "translate",
+      "tag",
+      "registerInputGroup",
+      "onMount",
+      "onUpdate",
+      "updateStoreForInputValidity",
+      "updateStoreForInputGroupValidity" ].forEach( prop => {
       if ( prop in whitelisted ) {
         delete whitelisted[ prop ];
       }
@@ -153,10 +172,12 @@ export class InputGroupComponent extends React.Component {
    * @returns {React.Component}
    */
   render() {
-    const { children, tag = "div", className } = this.props,
+    const { children, tag = "div", className, updateInputValidity, formAction, formState } = this.props,
           Container = `${tag}`,
-          tagProps = InputGroupComponent.normalizeTagProps( this.props ),
+          props = { id: this.id, ...this.props },
+          tagProps = InputGroupComponent.normalizeTagProps( props ),
           args = { ...this.state, inputGroup: this };
+
     return (
         <Container ref={this.inputGroup} {...tagProps}>{ children( args ) } </Container>);
   }
@@ -165,7 +186,14 @@ export class InputGroupComponent extends React.Component {
 
 export const InputGroup = ( props ) => (
   <FormContext.Consumer>
-    {({ registerInputGroup }) => <InputGroupComponent {...props} registerInputGroup={registerInputGroup} />}
+    {({ registerInputGroup,
+      updateStoreForInputGroupValidity,
+      updateStoreForInputValidity }) => <InputGroupComponent {...props}
+      registerInputGroup={registerInputGroup}
+      updateStoreForInputValidity={updateStoreForInputValidity}
+      updateStoreForInputGroupValidity={updateStoreForInputGroupValidity}
+
+        />}
   </FormContext.Consumer>
 );
 

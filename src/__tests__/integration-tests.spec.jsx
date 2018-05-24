@@ -316,17 +316,34 @@ describe("<InputGroup />", () => {
         );
     });
 
-    it("invokes onUpdate", ( done ) => {
-        const onUpdate = ( inputGroup ) => {
+
+    it("invokes onMount prop", ( done ) => {
+        const onMount = ( inputGroup ) => {
           expect( inputGroup ).not.toBeNull();
           done();
         };
+        const { queryByTestId } = render(
+            <Form>
+              {() => (
+              <InputGroup data-testid="inputGroup" validate={[ "email" ]} onMount={onMount}>
+                {({ inputGroup }) => (
+                    <input type="email" required name="email" />
+                )}
+              </InputGroup>
+            )}
+            </Form>,
+        );
+    });
+
+    it("updates state for a valid form", ( done ) => {
         const onMount = ( form ) => {
-          form.checkValidityAndUpdateInputGroups();
+          const res = form.checkValidityAndUpdateInputGroups();
+          expect( res ).toEqual( true );
+          done();
         };
         const { getByTestId } = render(<Form data-testid="form" onMount={onMount}>
-              { () => (<InputGroup tag="fieldset" validate={[ "email" ]} onUpdate={onUpdate}>
-              {() => ( <input type="email" data-testid="input" required name="email" defaultValue="no-email"  />  )}
+              { () => (<InputGroup tag="fieldset" validate={[ "email" ]}>
+              {() => ( <input data-testid="input" name="email"  />  )}
               </InputGroup>) }
             </Form>);
       });

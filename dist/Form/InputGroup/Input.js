@@ -19,43 +19,101 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var VALIDITY_PROPS = ["badInput", "customError", "patternMismatch", "rangeOverflow", "rangeUnderflow", "stepMismatch", "tooLong", "tooShort", "typeMismatch", "valueMissing"];
+var DEFAULT_VALIDITY = {
+  badInput: false,
+  customError: false,
+  patternMismatch: false,
+  rangeOverflow: false,
+  rangeUnderflow: false,
+  stepMismatch: false,
+  tooLong: false,
+  tooShort: false,
+  typeMismatch: false,
+  valueMissing: false,
+  valid: true
+};
 
 var Input = exports.Input = function () {
   function Input(_ref) {
-    var el = _ref.el,
+    var locator = _ref.locator,
         name = _ref.name,
         customValidator = _ref.customValidator,
-        translate = _ref.translate;
+        translate = _ref.translate,
+        parent = _ref.parent;
     (0, _classCallCheck3.default)(this, Input);
 
-    this.current = el;
+    this.locator = locator;
     this.name = name;
     this.customValidator = customValidator;
     this.assignedValidationMessages = {};
     this.applyValidationMessageMapping(translate);
+    this.parent = parent;
+    this.parent.updateStoreForInputValidity(name, DEFAULT_VALIDITY, "");
   }
 
   (0, _createClass3.default)(Input, [{
     key: "setCustomValidity",
+
+
+    /**
+     * Shortcut to setCustomValidity on DOM node
+     * @param {String} message
+     */
     value: function setCustomValidity() {
       var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
       return this.current.setCustomValidity(message);
     }
+
+    /**
+     * Check checkValidity implementaiton. First it resets custom validity and gets input validity logical conjunction
+     * DOM node one and registered custom validator
+     * @returns {Boolean}
+     */
+
   }, {
     key: "checkValidity",
     value: function checkValidity() {
+      if (!this.current) {
+        return false;
+      }
       this.setCustomValidity();
-      return this.current.checkValidity() && this.customValidator(this);
+      var valid = this.current.checkValidity() && this.customValidator(this);
+      this.parent.updateStoreForInputValidity(this.name, this.getValidity(), this.getValidationMessage());
+      return valid;
     }
+
+    /**
+     * Get validity as a plain object
+     * @returns {Object}
+     */
+
+  }, {
+    key: "getValidity",
+    value: function getValidity() {
+      var _this = this;
+
+      if (!this.current) {
+        return DEFAULT_VALIDITY;
+      }
+      return (0, _keys2.default)(DEFAULT_VALIDITY).reduce(function (carry, prop) {
+        carry[prop] = _this.current.validity[prop];
+        return carry;
+      }, {});
+    }
+
+    /**
+     * Process object passed with translate
+     * @param {Object} translate
+     */
+
   }, {
     key: "applyValidationMessageMapping",
     value: function applyValidationMessageMapping(translate) {
-      var _this = this;
+      var _this2 = this;
 
       translate && (0, _keys2.default)(translate).forEach(function (key) {
-        _this.assignValidationMessage(key, translate[key]);
+        _this2.assignValidationMessage(key, translate[key]);
       });
     }
 
@@ -71,7 +129,7 @@ var Input = exports.Input = function () {
   }, {
     key: "assignValidationMessage",
     value: function assignValidationMessage(prop, message) {
-      if (VALIDITY_PROPS.indexOf(prop) === -1) {
+      if ((0, _keys2.default)(DEFAULT_VALIDITY).indexOf(prop) === -1) {
         throw new Error("Invalid validity property " + prop);
       }
       this.assignedValidationMessages[prop] = message;
@@ -87,7 +145,7 @@ var Input = exports.Input = function () {
   }, {
     key: "getAssignedValidationMessage",
     value: function getAssignedValidationMessage(validity) {
-      var invalidProp = VALIDITY_PROPS.find(function (prop) {
+      var invalidProp = (0, _keys2.default)(DEFAULT_VALIDITY).find(function (prop) {
         return validity[prop];
       });
       return invalidProp && invalidProp in this.assignedValidationMessages ? this.assignedValidationMessages[invalidProp] : false;
@@ -97,17 +155,24 @@ var Input = exports.Input = function () {
     * Try to get message associated with currently invalid state property
     * If failed, standard assiciated message
     * If failed, browser validation message
+    * @param {ValidityState} [validityState=null]
     * @returns {string}
     */
 
   }, {
     key: "getValidationMessage",
     value: function getValidationMessage() {
-      var validity = this.current.validity,
+      var validityState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+      var validity = validityState || this.getValidity(),
           assignedMessage = this.getAssignedValidationMessage(validity);
 
       if (assignedMessage) {
         return assignedMessage;
+      }
+
+      if (!this.current) {
+        return "";
       }
 
       switch (true) {
@@ -126,6 +191,17 @@ var Input = exports.Input = function () {
       }
 
       return this.current.validationMessage;
+    }
+  }, {
+    key: "current",
+    get: function get() {
+      if (!this.currentCache) {
+        this.currentCache = this.locator();
+      }
+      if (!this.currentCache) {
+        this.parent.updateState(["Could not find selector [name=\"" + this.name + "\"]"], false);
+      }
+      return this.currentCache;
     }
   }]);
   return Input;

@@ -15,6 +15,7 @@ With the package you don't need to re-create form validation logic every time. I
 - Can be setup for custom validation messages per `input`/`ValidityState.Property`
 - Form and input groups expose validity states, so you can use it to toggle scope error messages.
 - Form and input groups expose reference to own instances for children DOM nodes. So you can, for example, subscribe for `input` event and run input group validation (e.g. see [On-the-fly validation](#on-the-fly-validation))
+- Can maintain form state both ways: with React Context and Redux
 
 
 ## Overview
@@ -35,8 +36,9 @@ npm i react-html5-form
 ## Demo
 
 You can see the component in action at [LIVE DEMO](https://dsheiko.github.io/react-html5-form/) :tv:
-- [source code](./demo/bootstrap/src/index.jsx) of example using HTML elements for inputs (styled with Bootstrap 4)
-- [source code](./demo/materialui/src/index.jsx) of example using read-made components for inputs (styled with MaterialUI.Next)
+- [source code](./demo/bootstrap/src/index.jsx) of example with HTML elements for inputs (styled with Bootstrap 4)
+- [source code](./demo/materialui/src/index.jsx) of example with read-made components for inputs (styled with MaterialUI.Next)
+- [source code](./demo/bootstrap-redux/src/index.jsx) of example with connection to Redux
 
 ```js
 import { Form } from "Form";
@@ -330,3 +332,36 @@ Represents input element within input group scope.
 - `setCustomValidity( message = "" )` - set the input in invalid state
 - `checkValidity()` - returns boolean truthy when all the input in valid state
 - `getValidationMessage()` - get validation message considering assigned custom message if any
+
+## Connecting to Redux store
+
+The package exposes reducer `html5form`, so one can connect form/input group/input states to the store:
+
+```jsx
+import React from "react";
+import { render } from "react-dom";
+import { createStore, combineReducers } from "redux";
+import { Provider } from "react-redux";
+
+import { App } from "./Containers/App.jsx";
+import { html5form } from "Form";
+
+const appReducer = combineReducers({
+  html5form
+});
+
+// Store creation
+const store = createStore( appReducer );
+
+render( <Provider store={store}>
+  <App />
+ </Provider>, document.getElementById( "app" ) );
+
+
+```
+
+Thus we get package-specific state tree in the store:
+
+![react-html5-form and Redux](https://github.com/dsheiko/react-html5-form/raw/master/docs/react-h5-redux.png)
+
+- See full example [here](./demo/bootstrap-redux/src/index.jsx)

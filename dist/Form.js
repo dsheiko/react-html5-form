@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Form = exports.InputGroup = undefined;
+exports.Form = exports.actionCreators = exports.html5form = exports.InputGroup = undefined;
 
 var _extends2 = require("babel-runtime/helpers/extends");
 
@@ -42,6 +42,15 @@ Object.defineProperty(exports, "InputGroup", {
   }
 });
 
+var _Reducers = require("./Redux/Reducers");
+
+Object.defineProperty(exports, "html5form", {
+  enumerable: true,
+  get: function get() {
+    return _Reducers.html5form;
+  }
+});
+
 var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
@@ -52,7 +61,18 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _Context = require("./Form/Context");
 
+var _Actions = require("./Redux/Actions");
+
+var actions = _interopRequireWildcard(_Actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var actionCreators = exports.actionCreators = actions;
+
+var AUTOCOMPLETE_TIMEOUT = 50;
+var counter = 0;
 
 var Form = exports.Form = function (_React$Component) {
   (0, _inherits3.default)(Form, _React$Component);
@@ -62,10 +82,15 @@ var Form = exports.Form = function (_React$Component) {
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (Form.__proto__ || (0, _getPrototypeOf2.default)(Form)).call(this, props));
 
+    _this.valid = false;
+    counter++, _this.id = props.id || "__form" + counter;
+
+    _this.updateStoreForFormValidity(true, "");
+
     _this.form = _react2.default.createRef();
     _this.onSubmit = _this.onSubmit.bind(_this);
 
-    _this.registerInputGroup = function (instance) {
+    var registerInputGroup = function registerInputGroup(instance) {
       _this.setState(function (state) {
         return {
           inputGroups: [].concat((0, _toConsumableArray3.default)(state.inputGroups), [instance])
@@ -73,7 +98,20 @@ var Form = exports.Form = function (_React$Component) {
       });
     };
 
+    var updateStoreForInputGroupValidity = function updateStoreForInputGroupValidity(groupId, valid, errors) {
+      var formActions = props.formActions;
+
+      formActions && formActions.updateInputGroupValidity(_this.id, groupId, valid, errors);
+    };
+
+    var updateStoreForInputValidity = function updateStoreForInputValidity(groupId, name, validity, validationMessage) {
+      var formActions = props.formActions;
+
+      formActions && formActions.updateInputValidity(_this.id, groupId, name, validity, validationMessage);
+    };
+
     _this.setError = function (message) {
+      _this.updateStoreForFormValidity(message, _this.valid);
       _this.setState({ error: message });
     };
 
@@ -81,25 +119,135 @@ var Form = exports.Form = function (_React$Component) {
       valid: true,
       error: null,
       inputGroups: [],
-      registerInputGroup: _this.registerInputGroup,
+      registerInputGroup: registerInputGroup,
+      updateStoreForInputGroupValidity: updateStoreForInputGroupValidity,
+      updateStoreForInputValidity: updateStoreForInputValidity,
       setError: _this.setError
     };
     return _this;
   }
 
   /**
-   * Abstract method to be overriden by a concrete implementation
+   * Invoke onUpdate handler
+   * @param {Object} prevProps
+   * @parma {Object} prevState
    */
 
 
   (0, _createClass3.default)(Form, [{
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState) {
+      var _props = this.props,
+          onUpdate = _props.onUpdate,
+          inputGroups = _props.inputGroups;
+
+      if (onUpdate && this.state.inputGroups.length && this.state.valid !== prevState.valid) {
+        onUpdate(this);
+      }
+    }
+
+    /**
+     * Invoke onMount handler
+     */
+
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      var onMount = this.props.onMount;
+
+      setTimeout(function () {
+        onMount ? onMount(_this2) : _this2.checkValidityAndUpdate();
+      }, AUTOCOMPLETE_TIMEOUT);
+    }
+
+    /**
+     * Update Redux store for form validity
+     * @param {Boolean} valid
+     * @param {String} error
+     */
+
+  }, {
+    key: "updateStoreForFormValidity",
+    value: function updateStoreForFormValidity(valid, error) {
+      var formActions = this.props.formActions;
+
+      formActions && formActions.updateFormValidity(this.id, valid, error);
+    }
+
+    /**
+     * Abstract method to be overriden by a concrete implementation
+     * @param {Event} e
+     */
+
+  }, {
     key: "onSubmit",
     value: function onSubmit(e) {
       var onSubmit = this.props.onSubmit;
 
       e.preventDefault();
-      this.setState({ valid: this.checkValidity() });
+      this.checkValidityAndUpdateInputGroups();
       onSubmit && onSubmit.call(this, this);
+    }
+
+    /**
+     * Shortcut to submit form
+     */
+
+  }, {
+    key: "submit",
+    value: function submit() {
+      this.getRef().current.submit();
+    }
+
+    /**
+     * Shortcut to access Ref on bounding DOM node
+     */
+
+  }, {
+    key: "getRef",
+    value: function getRef() {
+      return this.form;
+    }
+
+    /**
+     * Find the first input group in error state
+     * @returns {InputGroup}
+     */
+
+  }, {
+    key: "getFirstInvalidInputGroup",
+    value: function getFirstInvalidInputGroup() {
+      return this.state.inputGroups.find(function (group) {
+        return !group.valid;
+      });
+    }
+
+    /**
+     * Get debug info about registered input groups
+     * @param {Number} inx
+     * @returns {Object}
+     */
+
+  }, {
+    key: "debugInputGroups",
+    value: function debugInputGroups() {
+      var inx = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+      var debug = this.state.inputGroups.map(function (inputGroup) {
+        return {
+          name: inputGroup.inputGroup.current.name || "undefined",
+          valid: inputGroup.checkValidity(),
+          inputs: inputGroup.inputs.map(function (input) {
+            return {
+              name: input.name,
+              valid: input.checkValidity()
+            };
+          })
+        };
+      });
+      return inx === null ? debug : debug[inx];
     }
 
     /**
@@ -109,38 +257,86 @@ var Form = exports.Form = function (_React$Component) {
   }, {
     key: "scrollIntoViewFirstInvalidInputGroup",
     value: function scrollIntoViewFirstInvalidInputGroup() {
-      var firstInvalid = this.state.inputGroups.find(function (group) {
-        return !group.valid;
-      });
-      if (firstInvalid && "scrollIntoView" in firstInvalid) {
-        firstInvalid.scrollIntoView();
+      var firstInvalid = this.getFirstInvalidInputGroup();
+      if (firstInvalid && "scrollIntoView" in firstInvalid.inputGroup.current) {
+        firstInvalid.inputGroup.current.scrollIntoView();
       }
     }
+
+    /**
+     * Check form validity and update every input group
+     */
+
+  }, {
+    key: "checkValidityAndUpdateInputGroups",
+    value: function checkValidityAndUpdateInputGroups() {
+      var valid = this.checkValidity("checkValidityAndUpdate");
+      this.setState({ valid: valid });
+      return valid;
+    }
+
+    /**
+     * Check form validity and update the component state
+     */
+
+  }, {
+    key: "checkValidityAndUpdate",
+    value: function checkValidityAndUpdate() {
+      var valid = this.checkValidity("checkValidity");
+      this.setState({ valid: valid });
+      return valid;
+    }
+
+    /**
+     * Get form actual validity by logical conjunction of all registered inputs
+     * @param {String} [groupMethod = "checkValidityAndUpdate"]
+     * @returns {Boolean}
+     */
+
   }, {
     key: "checkValidity",
     value: function checkValidity() {
-      var valid = this.state.inputGroups.reduce(function (isValid, group) {
-        return group.checkValidityAndUpdate() && isValid;
+      var groupMethod = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "checkValidityAndUpdate";
+
+      this.valid = this.state.inputGroups.reduce(function (isValid, group) {
+        var valid = group[groupMethod]();
+        return valid && isValid;
       }, true);
-      valid || this.scrollIntoViewFirstInvalidInputGroup();
-      return valid;
+      this.updateStoreForFormValidity(this.valid, this.state.error);
+      this.valid || this.scrollIntoViewFirstInvalidInputGroup();
+      return this.valid;
     }
+
+    /**
+     * Extract properties for delegation to generated form element
+     * @param {Object} props
+     * @returns {Object}
+     */
+
   }, {
     key: "render",
+
+
+    /**
+     * Render the component
+     * @returns {React.Component}
+     */
     value: function render() {
-      var _props = this.props,
-          inputs = _props.inputs,
-          children = _props.children,
+      var _props2 = this.props,
+          inputs = _props2.inputs,
+          children = _props2.children,
+          formActions = _props2.formActions,
+          formState = _props2.formState,
           _state = this.state,
           error = _state.error,
           valid = _state.valid,
+          context = (0, _extends3.default)({}, this.state, { formActions: formActions, formState: formState }),
           form = this,
           tagProps = Form.normalizeTagProps(this.props);
 
-
       return _react2.default.createElement(
         _Context.FormContext.Provider,
-        { value: this.state },
+        { value: context },
         _react2.default.createElement(
           "form",
           (0, _extends3.default)({ noValidate: true, ref: this.form }, tagProps, { onSubmit: this.onSubmit }),
@@ -152,9 +348,11 @@ var Form = exports.Form = function (_React$Component) {
     key: "normalizeTagProps",
     value: function normalizeTagProps(props) {
       var whitelisted = (0, _extends3.default)({}, props);
-      if ("onSubmit" in whitelisted) {
-        delete whitelisted["onSubmit"];
-      }
+      ["onSubmit", "onMount", "onUpdate", "formActions", "formState"].forEach(function (prop) {
+        if (prop in whitelisted) {
+          delete whitelisted[prop];
+        }
+      });
       return whitelisted;
     }
   }]);
@@ -163,6 +361,8 @@ var Form = exports.Form = function (_React$Component) {
 
 Form.propTypes = {
   onSubmit: _propTypes2.default.func,
+  onMount: _propTypes2.default.func,
+  onUpdate: _propTypes2.default.func,
   tabindex: _propTypes2.default.string,
   title: _propTypes2.default.string,
   id: _propTypes2.default.string,

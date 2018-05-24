@@ -5,7 +5,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --watch  --config webpack.config.js",
-    "start": "http-server . -o -c-1",
+    "start": "http-server . -c-1",
     "lint": "jscs src",
     "lint:fix": "jscs src -x"
   },
