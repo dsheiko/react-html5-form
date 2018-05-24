@@ -15,7 +15,7 @@ With the package you don't need to re-create form validation logic every time. I
 - Can be setup for custom validation messages per `input`/`ValidityState.Property`
 - Form and input groups expose validity states, so you can use it to toggle scope error messages.
 - Form and input groups expose reference to own instances for children DOM nodes. So you can, for example, subscribe for `input` event and run input group validation (e.g. see [On-the-fly validation](#on-the-fly-validation))
-- Can maintain form state both ways: with React Context and Redux
+- Can maintain form state both ways: with React Context and [Redux](#connecting-to-redux-store)
 
 
 ## Overview
@@ -38,7 +38,7 @@ npm i react-html5-form
 You can see the component in action at [LIVE DEMO](https://dsheiko.github.io/react-html5-form/) :tv:
 - [source code](./demo/bootstrap/src/index.jsx) of example with HTML elements for inputs (styled with Bootstrap 4)
 - [source code](./demo/materialui/src/index.jsx) of example with read-made components for inputs (styled with MaterialUI.Next)
-- [source code](./demo/bootstrap-redux/src/index.jsx) of example with [connection to Redux](#connecting-to-redux-store)
+- [source code](./demo/bootstrap-redux/src/index.jsx) of example with connection to Redux
 
 
 ## Form
