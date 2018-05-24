@@ -38,15 +38,16 @@ npm i react-html5-form
 You can see the component in action at [LIVE DEMO](https://dsheiko.github.io/react-html5-form/) :tv:
 - [source code](./demo/bootstrap/src/index.jsx) of example with HTML elements for inputs (styled with Bootstrap 4)
 - [source code](./demo/materialui/src/index.jsx) of example with read-made components for inputs (styled with MaterialUI.Next)
-- [source code](./demo/bootstrap-redux/src/index.jsx) of example with connection to Redux
+- [source code](./demo/bootstrap-redux/src/index.jsx) of example with [connection to Redux](#connecting-to-redux-store)
 
-```js
-import { Form } from "Form";
-```
 
 ## Form
 
 Represents form
+
+```js
+import { Form } from "Form";
+```
 
 ### Props
 - `<Function>` `onSubmit` - (OPTIONAL) form submit handler
