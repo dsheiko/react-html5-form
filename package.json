@@ -20,12 +20,7 @@
     "name": "Dmitry Sheiko",
     "url": "http://dsheiko.com"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/fawek/codepainter/raw/master/LICENSE"
-    }
-  ],
+  { "license": "MIT" }, 
   "maintainers": [
     {
       "name": "Dmitry Sheiko",
