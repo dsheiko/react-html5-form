@@ -20,7 +20,7 @@
     "name": "Dmitry Sheiko",
     "url": "http://dsheiko.com"
   },
-  { "license": "MIT" }, 
+  "license": "MIT", 
   "maintainers": [
     {
       "name": "Dmitry Sheiko",
