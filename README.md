@@ -46,7 +46,7 @@ You can see the component in action at [LIVE DEMO](https://dsheiko.github.io/rea
 Represents form
 
 ```js
-import { Form } from "Form";
+import { Form } from "react-html5-form";
 ```
 
 ### Props
@@ -73,7 +73,7 @@ import { Form } from "Form";
 ```jsx
 import React from "react";
 import { render } from "react-dom";
-import { Form } from "Form";
+import { Form } from "react-html5-form";
 
 const MyForm = props => (
   <Form id="myform">
@@ -123,7 +123,7 @@ access the API by reference like `form.setError`
 `InputGroup` defines scope and API for a group of arbitrary inputs registered with `validate` prop. `InputGroup` exposes in the scope parameters that can be used to toggle group validation message(s), group state representation and to access the component API
 
 ```js
-import { Form, InputGroup } from "Form";
+import { Form, InputGroup } from "react-html5-form";
 ```
 
 ### Props
@@ -345,7 +345,7 @@ import { createStore, combineReducers } from "redux";
 import { Provider } from "react-redux";
 
 import { App } from "./Containers/App.jsx";
-import { html5form } from "Form";
+import { html5form } from "react-html5-form";
 
 const appReducer = combineReducers({
   html5form
