@@ -18,7 +18,7 @@ const FixtureTestInput = ({ onMount }) => <Form>
       {() => (
       <InputGroup data-testid="inputGroup" validate={[ "test" ]} onMount={onMount}>
         { () => (
-            <input name="test" />
+            <input name="test"  />
         )}
       </InputGroup>
     )}
@@ -52,6 +52,7 @@ const FixtureEmailFieldset = ({ error, valid, form }) => (
 
       <div className={`${!valid && "has-error"}`}>
         <input
+          data-testid="email"
           type="email"
           required
           name="email" />
@@ -120,6 +121,118 @@ describe("<Form />", () => {
         );
         Simulate.submit(getByTestId( "form" ));
     });
+
+    it("keeps pristine until first user interaction", ( done ) => {
+        const onMount = ( form ) => {
+          expect( form.state.pristine ).toEqual( true );
+          done();
+        };
+        const { getByTestId } = render(
+            <Form onMount={onMount}>
+               { props => <FixtureEmailFieldset {...props} /> }
+            </Form>,
+        );
+    });
+
+    it("changes pristine with the first user interaction", ( done ) => {
+        const onFormMount = ( form ) => {
+          expect( form.state.pristine ).not.toEqual( true );
+          done();
+        };
+        const onGroupMount = ( inputGroup ) => {
+            inputGroup.setPristine();
+        };
+        const { getByTestId } = render(
+            <Form onMount={onFormMount}>
+               {() => (
+                <InputGroup data-testid="inputGroup" validate={[ "test" ]} onMount={onGroupMount}>
+                  { () => (
+                      <input name="test"  />
+                  )}
+                </InputGroup>
+              )}
+            </Form>,
+        );
+    });
+
+    it("changes pristine only once", ( done ) => {
+        const onGroupMount = ( inputGroup ) => {
+            inputGroup.setPristine();
+            setTimeout(() => {
+              inputGroup.setPristine();
+              expect( inputGroup.state.pristine ).not.toEqual( true );
+              done();
+            }, 300 );
+        };
+        const { getByTestId } = render(
+            <Form>
+               {() => (
+                <InputGroup data-testid="inputGroup" validate={[ "test" ]} onMount={onGroupMount}>
+                  { () => (
+                      <input name="test"  />
+                  )}
+                </InputGroup>
+              )}
+            </Form>,
+        );
+    });
+
+
+
+    it("changes pristine from input", ( done ) => {
+        const onFormMount = ( form ) => {
+          expect( form.state.pristine ).not.toEqual( true );
+          done();
+        };
+        const onGroupMount = ( inputGroup ) => {
+          const input = inputGroup.getInputByName( "test" )
+          input.setPristine();
+        };
+        const { getByTestId } = render(
+            <Form onMount={onFormMount}>
+               {() => (
+                <InputGroup data-testid="inputGroup" validate={[ "test" ]} onMount={onGroupMount}>
+                  { () => (
+                      <input name="test"  />
+                  )}
+                </InputGroup>
+              )}
+            </Form>,
+        );
+    });
+
+    it("keeps submitting false by default", ( done ) => {
+        const onMount = ( form ) => {
+          expect( form.state.submitting ).toEqual( false );
+          done();
+        };
+        const { getByTestId } = render(
+            <Form onMount={onMount}>
+               { props => <FixtureEmailFieldset {...props} /> }
+            </Form>,
+        );
+    });
+
+    it("changes submitting while processing", ( done ) => {
+        const onMount = ( form ) => {
+          form.onSubmit();
+        };
+        const onSubmit = ( form ) => {
+          expect( form.state.submitting ).toEqual( true );
+          done();
+        };
+        const { getByTestId } = render(
+            <Form data-testid="form" onSubmit={onSubmit} onMount={onMount}>
+              { props =>  <InputGroup data-testid="inputGroup" validate={[ "test" ]}>
+                { () => (
+                    <input name="test"  />
+                )}
+              </InputGroup> }
+            </Form>,
+        );
+    });
+
+
   });
 
   describe("API", () => {
@@ -253,6 +366,32 @@ describe("<InputGroup />", () => {
         );
         expect(queryByTestId( "inputGroup" )).not.toBeNull();
     });
+
+
+    it("generates ids", () => {
+        const { getByTestId } = render(
+            <FixtureTestInput onMount={() => { }} />,
+        );
+        const actual = getByTestId( "inputGroup" ).id;
+        expect( actual.startsWith( "__igroup" ) ).toBe( true );
+    });
+
+    it("does not generates ids when specified", () => {
+        const { getByTestId } = render(
+          <Form>
+            {() => (
+            <InputGroup id="myid" data-testid="inputGroup" validate={[ "test" ]}>
+              { () => (
+                  <input name="test"  />
+              )}
+            </InputGroup>
+          )}
+          </Form>,
+        );
+        const actual = getByTestId( "inputGroup" ).id;
+        expect( actual ).toEqual( "myid" );
+    });
+
 
 
     it("accepts custom validator", ( done ) => {

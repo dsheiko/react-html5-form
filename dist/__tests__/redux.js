@@ -31,6 +31,11 @@ describe("Redux", function () {
     });
 
     it("default state", function () {
+      var state = (0, _Form.html5form)();
+      expect(defaultState).toEqual(defaultState);
+    });
+
+    it("handling nonexisting action", function () {
 
       var state = (0, _Form.html5form)(defaultState, {
         type: "NONEXISITNG",
@@ -75,6 +80,92 @@ describe("Redux", function () {
 
       expect((0, _keys2.default)(nextState.forms).length).toEqual(1);
       expect(nextState.forms[FIX_FORM_ID].valid).toEqual(false);
+    });
+
+    it("updates pristine", function () {
+
+      var prevState = (0, _Form.html5form)(defaultState, {
+        type: _Constants.UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      var nextState = (0, _Form.html5form)(prevState, {
+        type: _Constants.UPDATE_PRISTINE,
+        payload: {
+          formId: FIX_FORM_ID
+        }
+      });
+
+      expect(nextState.forms[FIX_FORM_ID].pristine).toEqual(false);
+    });
+
+    it("updates pristine for non existing form", function () {
+
+      var prevState = (0, _Form.html5form)(defaultState, {
+        type: _Constants.UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      var nextState = (0, _Form.html5form)(prevState, {
+        type: _Constants.UPDATE_PRISTINE,
+        payload: {
+          formId: "NONEXISITNG"
+        }
+      });
+
+      expect(nextState.forms[FIX_FORM_ID].pristine).toEqual(true);
+    });
+
+    it("updates submitting", function () {
+
+      var prevState = (0, _Form.html5form)(defaultState, {
+        type: _Constants.UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      var nextState = (0, _Form.html5form)(prevState, {
+        type: _Constants.UPDATE_FORM_SUBMITTING,
+        payload: {
+          formId: FIX_FORM_ID,
+          submitting: true
+        }
+      });
+
+      expect(nextState.forms[FIX_FORM_ID].submitting).toEqual(true);
+    });
+
+    it("updates submitting for non-existing form", function () {
+
+      var prevState = (0, _Form.html5form)(defaultState, {
+        type: _Constants.UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      var nextState = (0, _Form.html5form)(prevState, {
+        type: _Constants.UPDATE_FORM_SUBMITTING,
+        payload: {
+          formId: "NONEXISITNG",
+          submitting: true
+        }
+      });
+
+      expect(nextState.forms[FIX_FORM_ID].submitting).toEqual(false);
     });
 
     it("registers inputGroup", function () {
@@ -202,6 +293,10 @@ describe("Redux", function () {
         var res = (0, _Actions.updateInputValidity)(FIX_FORM_ID, FIX_GROUP_ID, FIX_NAME, {}, "");
         expect(res.payload.formId).toEqual(FIX_FORM_ID);
       });
+      it("does not fail without parameters", function () {
+        var res = (0, _Actions.updateInputValidity)();
+        expect(res.payload.formId).toEqual("");
+      });
     });
 
     describe("updateInputGroupValidity", function () {
@@ -209,12 +304,42 @@ describe("Redux", function () {
         var res = (0, _Actions.updateInputGroupValidity)(FIX_FORM_ID, FIX_GROUP_ID, true, []);
         expect(res.payload.formId).toEqual(FIX_FORM_ID);
       });
+      it("does not fail without parameters", function () {
+        var res = (0, _Actions.updateInputGroupValidity)();
+        expect(res.payload.formId).toEqual("");
+      });
     });
 
     describe("updateFormValidity", function () {
       it("returns expected payload", function () {
         var res = (0, _Actions.updateFormValidity)(FIX_FORM_ID, FIX_GROUP_ID, true, "");
         expect(res.payload.formId).toEqual(FIX_FORM_ID);
+      });
+      it("does not fail without parameters", function () {
+        var res = (0, _Actions.updateFormValidity)();
+        expect(res.payload.formId).toEqual("");
+      });
+    });
+
+    describe("updatePristine", function () {
+      it("returns expected payload", function () {
+        var res = (0, _Actions.updatePristine)(FIX_FORM_ID, FIX_GROUP_ID);
+        expect(res.payload.formId).toEqual(FIX_FORM_ID);
+      });
+      it("does not fail without parameters", function () {
+        var res = (0, _Actions.updatePristine)();
+        expect(res.payload.formId).toEqual("");
+      });
+    });
+
+    describe("updateSubmitting", function () {
+      it("returns expected payload", function () {
+        var res = (0, _Actions.updateSubmitting)(FIX_FORM_ID, true);
+        expect(res.payload.formId).toEqual(FIX_FORM_ID);
+      });
+      it("does not fail without parameters", function () {
+        var res = (0, _Actions.updateSubmitting)();
+        expect(res.payload.formId).toEqual("");
       });
     });
   });

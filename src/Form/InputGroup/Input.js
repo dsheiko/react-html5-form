@@ -22,6 +22,21 @@ export class Input {
     this.applyValidationMessageMapping( translate );
     this.parent = parent;
     this.parent.updateStoreForInputValidity( name, DEFAULT_VALIDITY, "" );
+    this.setPristine = () => {
+      this.parent.setPristine();
+    };
+    this.subscribePristineHandler();
+  }
+
+  /**
+   * Change Pristine on the first input
+   */
+  subscribePristineHandler() {
+    const el = this.current;
+    if ( !el ) {
+      return;
+    }
+    el.addEventListener( "input", this.setPristine, false );
   }
 
   get current() {

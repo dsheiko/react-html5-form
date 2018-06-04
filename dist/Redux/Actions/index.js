@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateFormValidity = exports.updateInputGroupValidity = exports.updateInputValidity = undefined;
+exports.updateSubmitting = exports.updatePristine = exports.updateFormValidity = exports.updateInputGroupValidity = exports.updateInputValidity = undefined;
 
 var _Constants = require("../Constants");
 
@@ -50,5 +50,26 @@ var updateFormValidity = exports.updateFormValidity = function updateFormValidit
     payload: {
       valid: valid, error: error, formId: formId
     }
+  };
+};
+
+var updatePristine = exports.updatePristine = function updatePristine() {
+  var formId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+  var groupId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+  return {
+    type: _Constants.UPDATE_PRISTINE,
+    payload: {
+      groupId: groupId,
+      formId: formId
+    }
+  };
+};
+
+var updateSubmitting = exports.updateSubmitting = function updateSubmitting() {
+  var formId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+  var submitting = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  return {
+    type: _Constants.UPDATE_FORM_SUBMITTING,
+    payload: { formId: formId, submitting: submitting }
   };
 };

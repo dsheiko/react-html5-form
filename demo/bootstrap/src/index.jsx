@@ -3,10 +3,16 @@ import { render } from "react-dom";
 import debounce from "./debounce";
 import { Form, InputGroup } from "Form";
 
+const XHR_TIMEOUT = 1000;
+
 async function onSubmit( form ) {
-  // let's pretend we have a server error
-  form.setError("Opps, a server error");
-  return Promise.resolve();
+  return new Promise(( resolve ) => {
+    setTimeout(() => {
+      // let's pretend we have a server error
+      form.setError("Opps, a server error");
+      return resolve();
+    }, XHR_TIMEOUT );
+  });
 };
 
 // Debounce for 50ms
@@ -32,7 +38,7 @@ const validateDateTime = ( input ) => {
 
 const MyForm = props => (
   <Form onSubmit={onSubmit} id="myform">
-  {({ error, valid, form }) => (
+  {({ error, valid, pristine, submitting, form }) => (
       <React.Fragment>
         <h2>Demo Form</h2>
 
@@ -173,7 +179,11 @@ const MyForm = props => (
         )}
         </InputGroup>
 
-        <button className="btn btn-primary" type="submit">Submit</button>
+        <button
+          disabled={ ( pristine || submitting ) }
+          className="btn btn-primary"
+          type="submit"
+          >Submit</button>
       </React.Fragment>
     )}
   </Form>

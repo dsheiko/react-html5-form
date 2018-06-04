@@ -9,6 +9,14 @@ var _extends2 = require("babel-runtime/helpers/extends");
 
 var _extends3 = _interopRequireDefault(_extends2);
 
+var _regenerator = require("babel-runtime/regenerator");
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = require("babel-runtime/helpers/asyncToGenerator");
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
 var _toConsumableArray2 = require("babel-runtime/helpers/toConsumableArray");
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
@@ -90,6 +98,18 @@ var Form = exports.Form = function (_React$Component) {
     _this.form = _react2.default.createRef();
     _this.onSubmit = _this.onSubmit.bind(_this);
 
+    /***
+    * Set pristine to true when first input
+    */
+    var setPristine = function setPristine() {
+      if (!_this.state.pristine) {
+        return;
+      }
+      _this.setState({
+        pristine: false
+      });
+    };
+
     var registerInputGroup = function registerInputGroup(instance) {
       _this.setState(function (state) {
         return {
@@ -110,6 +130,12 @@ var Form = exports.Form = function (_React$Component) {
       formActions && formActions.updateInputValidity(_this.id, groupId, name, validity, validationMessage);
     };
 
+    var updateStoreForPristine = function updateStoreForPristine(groupId) {
+      var formActions = props.formActions;
+
+      formActions && formActions.updatePristine(_this.id, groupId);
+    };
+
     _this.setError = function (message) {
       _this.updateStoreForFormValidity(message, _this.valid);
       _this.setState({ error: message });
@@ -119,9 +145,13 @@ var Form = exports.Form = function (_React$Component) {
       valid: true,
       error: null,
       inputGroups: [],
+      pristine: true,
+      submitting: false,
       registerInputGroup: registerInputGroup,
       updateStoreForInputGroupValidity: updateStoreForInputGroupValidity,
       updateStoreForInputValidity: updateStoreForInputValidity,
+      setPristine: setPristine,
+      updateStoreForPristine: updateStoreForPristine,
       setError: _this.setError
     };
     return _this;
@@ -183,12 +213,59 @@ var Form = exports.Form = function (_React$Component) {
 
   }, {
     key: "onSubmit",
-    value: function onSubmit(e) {
-      var onSubmit = this.props.onSubmit;
+    value: function () {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+        var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var onSubmit;
+        return _regenerator2.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                onSubmit = this.props.onSubmit;
 
-      e.preventDefault();
-      this.checkValidityAndUpdateInputGroups();
-      onSubmit && onSubmit.call(this, this);
+                e && e.preventDefault();
+                this.toggleSubmitting(true);
+                this.checkValidityAndUpdateInputGroups();
+                this.valid || this.scrollIntoViewFirstInvalidInputGroup();
+
+                if (!(this.valid && onSubmit)) {
+                  _context.next = 8;
+                  break;
+                }
+
+                _context.next = 8;
+                return onSubmit.call(this, this);
+
+              case 8:
+                this.toggleSubmitting(false);
+
+              case 9:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function onSubmit() {
+        return _ref.apply(this, arguments);
+      }
+
+      return onSubmit;
+    }()
+    /**
+     * Toggle submitting state
+     * @param {boolean} submitting
+     */
+
+  }, {
+    key: "toggleSubmitting",
+    value: function toggleSubmitting() {
+      var submitting = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var formActions = this.props.formActions;
+
+      formActions && formActions.updateSubmitting(this.id, submitting);
+      this.setState({ submitting: submitting });
     }
 
     /**
@@ -303,7 +380,6 @@ var Form = exports.Form = function (_React$Component) {
         return valid && isValid;
       }, true);
       this.updateStoreForFormValidity(this.valid, this.state.error);
-      this.valid || this.scrollIntoViewFirstInvalidInputGroup();
       return this.valid;
     }
 
@@ -330,9 +406,12 @@ var Form = exports.Form = function (_React$Component) {
           _state = this.state,
           error = _state.error,
           valid = _state.valid,
+          pristine = _state.pristine,
+          submitting = _state.submitting,
           context = (0, _extends3.default)({}, this.state, { formActions: formActions, formState: formState }),
           form = this,
           tagProps = Form.normalizeTagProps(this.props);
+
 
       return _react2.default.createElement(
         _Context.FormContext.Provider,
@@ -340,7 +419,7 @@ var Form = exports.Form = function (_React$Component) {
         _react2.default.createElement(
           "form",
           (0, _extends3.default)({ noValidate: true, ref: this.form }, tagProps, { onSubmit: this.onSubmit }),
-          children({ error: error, valid: valid, form: form })
+          children({ error: error, valid: valid, pristine: pristine, submitting: submitting, form: form })
         )
       );
     }

@@ -64,17 +64,35 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
     _this.state = {
       valid: true,
       error: null,
-      errors: []
+      errors: [],
+      pristine: true
     };
     return _this;
   }
 
-  /**
-   * Shortcut to access Ref on bounding DOM node
+  /***
+   * Set pristine to true when first input
    */
 
 
   (0, _createClass3.default)(InputGroupComponent, [{
+    key: "setPristine",
+    value: function setPristine() {
+      this.props.setPristine();
+      if (!this.state.pristine) {
+        return;
+      }
+      this.props.updateStoreForPristine(this.id);
+      this.setState({
+        pristine: false
+      });
+    }
+
+    /**
+     * Shortcut to access Ref on bounding DOM node
+     */
+
+  }, {
     key: "getRef",
     value: function getRef() {
       return this.inputGroup;
@@ -126,6 +144,7 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
           translate = _props.translate,
           onMount = _props.onMount,
           updateStoreForInputGroupValidity = _props.updateStoreForInputGroupValidity,
+          setPristine = _props.setPristine,
           names = this.extractInputNames(validate);
 
 
@@ -280,7 +299,7 @@ var InputGroupComponent = exports.InputGroupComponent = function (_React$Compone
     key: "normalizeTagProps",
     value: function normalizeTagProps(props) {
       var whitelisted = (0, _extends3.default)({}, props);
-      ["validate", "translate", "tag", "registerInputGroup", "onMount", "onUpdate", "updateStoreForInputValidity", "updateStoreForInputGroupValidity"].forEach(function (prop) {
+      ["validate", "translate", "tag", "registerInputGroup", "onMount", "onUpdate", "updateStoreForInputValidity", "updateStoreForInputGroupValidity", "setPristine", "updateStoreForPristine"].forEach(function (prop) {
         if (prop in whitelisted) {
           delete whitelisted[prop];
         }
@@ -299,13 +318,16 @@ var InputGroup = exports.InputGroup = function InputGroup(props) {
     null,
     function (_ref) {
       var registerInputGroup = _ref.registerInputGroup,
+          setPristine = _ref.setPristine,
           updateStoreForInputGroupValidity = _ref.updateStoreForInputGroupValidity,
-          updateStoreForInputValidity = _ref.updateStoreForInputValidity;
+          updateStoreForInputValidity = _ref.updateStoreForInputValidity,
+          updateStoreForPristine = _ref.updateStoreForPristine;
       return _react2.default.createElement(InputGroupComponent, (0, _extends3.default)({}, props, {
+        setPristine: setPristine,
         registerInputGroup: registerInputGroup,
         updateStoreForInputValidity: updateStoreForInputValidity,
-        updateStoreForInputGroupValidity: updateStoreForInputGroupValidity
-
+        updateStoreForInputGroupValidity: updateStoreForInputGroupValidity,
+        updateStoreForPristine: updateStoreForPristine
       }));
     }
   );
@@ -313,10 +335,17 @@ var InputGroup = exports.InputGroup = function InputGroup(props) {
 
 InputGroup.propTypes = {
   validate: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.array]).isRequired,
-  registerInputGroup: _propTypes2.default.func,
   onUpdate: _propTypes2.default.func,
   onMount: _propTypes2.default.func,
   translate: _propTypes2.default.object,
   tag: _propTypes2.default.string,
   className: _propTypes2.default.string
 };
+
+InputGroupComponent.propTypes = (0, _extends3.default)({}, InputGroup.propTypes, {
+  registerInputGroup: _propTypes2.default.func,
+  setPristine: _propTypes2.default.func,
+  updateStoreForInputValidity: _propTypes2.default.func,
+  updateStoreForInputGroupValidity: _propTypes2.default.func,
+  updateStoreForPristine: _propTypes2.default.func
+});

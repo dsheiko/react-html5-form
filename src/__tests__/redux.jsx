@@ -1,6 +1,16 @@
 import { html5form } from "../Form";
-import { UPDATE_FORM_VALIDITY, UPDATE_INPUT_GROUP_VALIDITY, UPDATE_INPUT_VALIDITY } from "../Redux/Constants";
-import { updateInputValidity, updateInputGroupValidity, updateFormValidity } from "../Redux/Actions";
+import {
+  UPDATE_FORM_VALIDITY,
+  UPDATE_INPUT_GROUP_VALIDITY,
+  UPDATE_INPUT_VALIDITY,
+  UPDATE_FORM_SUBMITTING,
+  UPDATE_PRISTINE } from "../Redux/Constants";
+import {
+  updateInputValidity,
+  updateInputGroupValidity,
+  updateFormValidity,
+  updatePristine,
+  updateSubmitting } from "../Redux/Actions";
 
 const FIX_FORM_ID = "myForm",
       FIX_GROUP_ID = "myGroup",
@@ -21,6 +31,12 @@ describe( "Redux", () => {
     });
 
     it( "default state", () => {
+      const state = html5form();
+      expect( defaultState ).toEqual( defaultState );
+
+    });
+
+    it( "handling nonexisting action", () => {
 
       const state = html5form( defaultState, {
         type: "NONEXISITNG",
@@ -67,6 +83,100 @@ describe( "Redux", () => {
 
       expect( Object.keys( nextState.forms ).length ).toEqual( 1 );
       expect( nextState.forms[ FIX_FORM_ID ].valid ).toEqual( false );
+
+    });
+
+    it( "updates pristine", () => {
+
+      const prevState = html5form( defaultState, {
+        type: UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      const nextState = html5form( prevState, {
+        type: UPDATE_PRISTINE,
+        payload: {
+          formId: FIX_FORM_ID
+        }
+      });
+
+
+      expect( nextState.forms[ FIX_FORM_ID ].pristine ).toEqual( false );
+
+    });
+
+    it( "updates pristine for non existing form", () => {
+
+      const prevState = html5form( defaultState, {
+        type: UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      const nextState = html5form( prevState, {
+        type: UPDATE_PRISTINE,
+        payload: {
+          formId: "NONEXISITNG"
+        }
+      });
+
+
+      expect( nextState.forms[ FIX_FORM_ID ].pristine ).toEqual( true );
+
+    });
+
+    it( "updates submitting", () => {
+
+      const prevState = html5form( defaultState, {
+        type: UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      const nextState = html5form( prevState, {
+        type: UPDATE_FORM_SUBMITTING,
+        payload: {
+          formId: FIX_FORM_ID,
+          submitting: true
+        }
+      });
+
+
+      expect( nextState.forms[ FIX_FORM_ID ].submitting ).toEqual( true );
+
+    });
+
+    it( "updates submitting for non-existing form", () => {
+
+      const prevState = html5form( defaultState, {
+        type: UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      const nextState = html5form( prevState, {
+        type: UPDATE_FORM_SUBMITTING,
+        payload: {
+          formId: "NONEXISITNG",
+          submitting: true
+        }
+      });
+
+
+      expect( nextState.forms[ FIX_FORM_ID ].submitting ).toEqual( false );
 
     });
 
@@ -205,6 +315,10 @@ describe( "Redux", () => {
         const res = updateInputValidity( FIX_FORM_ID, FIX_GROUP_ID, FIX_NAME, {}, "" );
         expect( res.payload.formId ).toEqual( FIX_FORM_ID );
       });
+      it( "does not fail without parameters", () => {
+        const res = updateInputValidity();
+        expect( res.payload.formId ).toEqual( "" );
+      });
     });
 
     describe( "updateInputGroupValidity", () => {
@@ -212,12 +326,42 @@ describe( "Redux", () => {
         const res = updateInputGroupValidity( FIX_FORM_ID, FIX_GROUP_ID, true, [] );
         expect( res.payload.formId ).toEqual( FIX_FORM_ID );
       });
+      it( "does not fail without parameters", () => {
+        const res = updateInputGroupValidity();
+        expect( res.payload.formId ).toEqual( "" );
+      });
     });
 
     describe( "updateFormValidity", () => {
       it( "returns expected payload", () => {
         const res = updateFormValidity( FIX_FORM_ID, FIX_GROUP_ID, true, "" );
         expect( res.payload.formId ).toEqual( FIX_FORM_ID );
+      });
+      it( "does not fail without parameters", () => {
+        const res = updateFormValidity();
+        expect( res.payload.formId ).toEqual( "" );
+      });
+    });
+
+    describe( "updatePristine", () => {
+      it( "returns expected payload", () => {
+        const res = updatePristine( FIX_FORM_ID, FIX_GROUP_ID );
+        expect( res.payload.formId ).toEqual( FIX_FORM_ID );
+      });
+      it( "does not fail without parameters", () => {
+        const res = updatePristine();
+        expect( res.payload.formId ).toEqual( "" );
+      });
+    });
+
+    describe( "updateSubmitting", () => {
+      it( "returns expected payload", () => {
+        const res = updateSubmitting( FIX_FORM_ID, true );
+        expect( res.payload.formId ).toEqual( FIX_FORM_ID );
+      });
+      it( "does not fail without parameters", () => {
+        const res = updateSubmitting();
+        expect( res.payload.formId ).toEqual( "" );
       });
     });
 

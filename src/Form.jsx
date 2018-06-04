@@ -23,6 +23,18 @@ export class Form extends React.Component {
     this.form = React.createRef();
     this.onSubmit = this.onSubmit.bind( this );
 
+    /***
+    * Set pristine to true when first input
+    */
+    const setPristine = () => {
+      if ( !this.state.pristine ) {
+        return;
+      }
+      this.setState({
+        pristine: false
+      });
+    };
+
     const registerInputGroup = ( instance ) => {
       this.setState( state => {
         return {
@@ -45,6 +57,13 @@ export class Form extends React.Component {
       );
     };
 
+    const updateStoreForPristine = ( groupId ) => {
+      const { formActions } = props;
+      formActions && formActions.updatePristine(
+        this.id, groupId
+      );
+    };
+
 
     this.setError = ( message ) => {
       this.updateStoreForFormValidity( message, this.valid );
@@ -55,9 +74,13 @@ export class Form extends React.Component {
       valid: true,
       error: null,
       inputGroups: [],
+      pristine: true,
+      submitting: false,
       registerInputGroup,
       updateStoreForInputGroupValidity,
       updateStoreForInputValidity,
+      setPristine,
+      updateStoreForPristine,
       setError: this.setError
     };
   }
@@ -100,11 +123,26 @@ export class Form extends React.Component {
    * Abstract method to be overriden by a concrete implementation
    * @param {Event} e
    */
-  onSubmit( e ) {
+  async onSubmit( e = null ) {
     const { onSubmit } = this.props;
-    e.preventDefault();
+    e && e.preventDefault();
+    this.toggleSubmitting( true );
     this.checkValidityAndUpdateInputGroups();
-    onSubmit && onSubmit.call( this, this );
+    this.valid || this.scrollIntoViewFirstInvalidInputGroup();
+    if ( this.valid && onSubmit ) {
+      await onSubmit.call( this, this );
+    }
+    this.toggleSubmitting( false );
+
+  }
+  /**
+   * Toggle submitting state
+   * @param {boolean} submitting
+   */
+  toggleSubmitting( submitting = false ) {
+    const { formActions } = this.props;
+    formActions && formActions.updateSubmitting( this.id, submitting );
+    this.setState({ submitting });
   }
 
   /**
@@ -185,7 +223,6 @@ export class Form extends React.Component {
       return valid && isValid;
     }, true );
     this.updateStoreForFormValidity( this.valid, this.state.error );
-    this.valid || this.scrollIntoViewFirstInvalidInputGroup();
     return this.valid;
   }
 
@@ -210,14 +247,15 @@ export class Form extends React.Component {
    */
   render() {
     const { inputs, children, formActions, formState } = this.props,
-      { error, valid } = this.state,
+      { error, valid, pristine, submitting } = this.state,
       context = { ...this.state, formActions, formState },
       form = this,
       tagProps = Form.normalizeTagProps( this.props );
+
     return (
       <FormContext.Provider value={context}>
           <form noValidate ref={this.form} {...tagProps} onSubmit={this.onSubmit}>
-            { children( { error, valid, form } ) }
+            { children( { error, valid, pristine, submitting, form } ) }
           </form>
       </FormContext.Provider>
     );

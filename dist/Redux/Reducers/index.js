@@ -20,8 +20,9 @@ var defaultState = {
 
 function html5form() {
   var prevState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
-  var _ref = arguments[1];
-  var type = _ref.type,
+
+  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { type: null, payload: {} },
+      type = _ref.type,
       payload = _ref.payload;
 
   var state = (0, _extends3.default)({}, prevState);
@@ -47,6 +48,20 @@ function html5form() {
       };
       return state;
 
+    case _Constants.UPDATE_PRISTINE:
+      if (!(payload.formId in state.forms)) {
+        return state;
+      }
+      state.forms[payload.formId].pristine = false;
+      return state;
+
+    case _Constants.UPDATE_FORM_SUBMITTING:
+      if (!(payload.formId in state.forms)) {
+        return state;
+      }
+      state.forms[payload.formId].submitting = payload.submitting;
+      return state;
+
     case _Constants.UPDATE_INPUT_GROUP_VALIDITY:
       if (!(payload.formId in state.forms)) {
         return state;
@@ -67,7 +82,9 @@ function html5form() {
       state.forms[payload.formId] = (0, _extends3.default)({}, prev, {
         id: payload.formId,
         valid: payload.valid,
-        error: payload.error
+        error: payload.error,
+        pristine: true,
+        submitting: false
       });
       return state;
 

@@ -67,6 +67,8 @@ import { Form } from "react-html5-form";
 ### Scope parameters
 - `<String>` `error` - error message set with `setError()`
 - `<Boolean>` `valid` - form validity state
+- `<Boolean>` `pristine` - true if user has not interacted with the form yet.
+- `<Boolean>` `submitting` - true while form is being processed on submission
 - `<React.Component>` `form` - link to the component API
 
 #### Defining component
@@ -101,13 +103,16 @@ async function onSubmit( form ) {
 
 const MyForm = props => (
   <Form onSubmit={onSubmit} id="myform">
-  {({ error, valid, form }) => (
+  {({ error, valid, pristine, submitting, form }) => (
       <>
       { error && (<div className="alert alert-danger" role="alert">
             <strong>Oh snap!</strong> {error}
           </div>)
       }
       Form content
+
+      <button disabled={ ( pristine || submitting ) } type="submit">Submit</button>
+
       </>
     )}
   </Form>
@@ -116,7 +121,7 @@ const MyForm = props => (
 
 The API can be accessed by `form` reference. Besides, any handler passed through `onSubmit` prop gets wrapped.
 The component calls `setState` for `checkValidity` prior calling the specified handler. From the handler you can
-access the API by reference like `form.setError`
+access the API by reference like `form.setError`. What is more, we disable submit button until the user first interaction with the form and on form submission (`onSubmit is an asynchronous function / Promise; as it resolves the state property `submitting` set in false).
 
 
 ## InputGroup
@@ -174,6 +179,7 @@ import { Form, InputGroup } from "react-html5-form";
 - `<String>` `error` - validation message for the first invalid input
 - `<String[]>` `errors` - array of validation messages for all the inputs
 - `<Boolean>` `valid` - input group validity state (product of input states)
+- `<Boolean>` `pristine` - true if user has not interacted with the form yet.
 - `<React.Component>` `inputGroup` - link to the component API
 
 

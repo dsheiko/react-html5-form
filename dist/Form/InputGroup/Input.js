@@ -35,6 +35,8 @@ var DEFAULT_VALIDITY = {
 
 var Input = exports.Input = function () {
   function Input(_ref) {
+    var _this = this;
+
     var locator = _ref.locator,
         name = _ref.name,
         customValidator = _ref.customValidator,
@@ -49,9 +51,27 @@ var Input = exports.Input = function () {
     this.applyValidationMessageMapping(translate);
     this.parent = parent;
     this.parent.updateStoreForInputValidity(name, DEFAULT_VALIDITY, "");
+    this.setPristine = function () {
+      _this.parent.setPristine();
+    };
+    this.subscribePristineHandler();
   }
 
+  /**
+   * Change Pristine on the first input
+   */
+
+
   (0, _createClass3.default)(Input, [{
+    key: "subscribePristineHandler",
+    value: function subscribePristineHandler() {
+      var el = this.current;
+      if (!el) {
+        return;
+      }
+      el.addEventListener("input", this.setPristine, false);
+    }
+  }, {
     key: "setCustomValidity",
 
 
@@ -91,13 +111,13 @@ var Input = exports.Input = function () {
   }, {
     key: "getValidity",
     value: function getValidity() {
-      var _this = this;
+      var _this2 = this;
 
       if (!this.current) {
         return DEFAULT_VALIDITY;
       }
       return (0, _keys2.default)(DEFAULT_VALIDITY).reduce(function (carry, prop) {
-        carry[prop] = _this.current.validity[prop];
+        carry[prop] = _this2.current.validity[prop];
         return carry;
       }, {});
     }
@@ -110,10 +130,10 @@ var Input = exports.Input = function () {
   }, {
     key: "applyValidationMessageMapping",
     value: function applyValidationMessageMapping(translate) {
-      var _this2 = this;
+      var _this3 = this;
 
       translate && (0, _keys2.default)(translate).forEach(function (key) {
-        _this2.assignValidationMessage(key, translate[key]);
+        _this3.assignValidationMessage(key, translate[key]);
       });
     }
 

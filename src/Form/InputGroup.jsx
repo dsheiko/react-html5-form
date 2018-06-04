@@ -17,8 +17,23 @@ export class InputGroupComponent extends React.Component {
     this.state = {
       valid: true,
       error: null,
-      errors: []
+      errors: [],
+      pristine: true
     };
+  }
+
+  /***
+   * Set pristine to true when first input
+   */
+  setPristine() {
+    this.props.setPristine();
+    if ( !this.state.pristine ) { 
+      return;
+    }
+    this.props.updateStoreForPristine( this.id );
+    this.setState({
+      pristine: false
+    });
   }
 
   /**
@@ -56,7 +71,7 @@ export class InputGroupComponent extends React.Component {
    * Register inputs by props validate and translate. Invoke onMount
    */
   componentDidMount() {
-    const { validate, registerInputGroup, translate, onMount, updateStoreForInputGroupValidity } = this.props,
+    const { validate, registerInputGroup, translate, onMount, updateStoreForInputGroupValidity, setPristine } = this.props,
           names = this.extractInputNames( validate );
 
     this.inputs = names
@@ -159,7 +174,9 @@ export class InputGroupComponent extends React.Component {
       "onMount",
       "onUpdate",
       "updateStoreForInputValidity",
-      "updateStoreForInputGroupValidity" ].forEach( prop => {
+      "updateStoreForInputGroupValidity",
+      "setPristine",
+      "updateStoreForPristine" ].forEach( prop => {
       if ( prop in whitelisted ) {
         delete whitelisted[ prop ];
       }
@@ -187,13 +204,16 @@ export class InputGroupComponent extends React.Component {
 export const InputGroup = ( props ) => (
   <FormContext.Consumer>
     {({ registerInputGroup,
+      setPristine,
       updateStoreForInputGroupValidity,
-      updateStoreForInputValidity }) => <InputGroupComponent {...props}
-      registerInputGroup={registerInputGroup}
-      updateStoreForInputValidity={updateStoreForInputValidity}
-      updateStoreForInputGroupValidity={updateStoreForInputGroupValidity}
-
-        />}
+      updateStoreForInputValidity,
+      updateStoreForPristine }) => <InputGroupComponent {...props}
+        setPristine={setPristine}
+        registerInputGroup={registerInputGroup}
+        updateStoreForInputValidity={updateStoreForInputValidity}
+        updateStoreForInputGroupValidity={updateStoreForInputGroupValidity}
+        updateStoreForPristine={updateStoreForPristine}
+      />}
   </FormContext.Consumer>
 );
 
@@ -202,10 +222,18 @@ InputGroup.propTypes = {
     PropTypes.object,
     PropTypes.array
   ]).isRequired,
-  registerInputGroup: PropTypes.func,
   onUpdate: PropTypes.func,
   onMount: PropTypes.func,
   translate: PropTypes.object,
   tag: PropTypes.string,
   className: PropTypes.string
+};
+
+InputGroupComponent.propTypes = {
+  ...InputGroup.propTypes,
+  registerInputGroup: PropTypes.func,
+  setPristine: PropTypes.func,
+  updateStoreForInputValidity: PropTypes.func,
+  updateStoreForInputGroupValidity: PropTypes.func,
+  updateStoreForPristine: PropTypes.func
 };
