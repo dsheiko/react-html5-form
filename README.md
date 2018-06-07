@@ -72,6 +72,8 @@ import { Form } from "react-html5-form";
 - `<Boolean>` `submitted` - true after form submitted
 - `<React.Component>` `form` - link to the component API
 
+> State properties `valid`, `pristine`, `submitting`, `submitted` are also available as element data-attributes e.g. `data-submitting="false"`
+
 #### Defining component
 ```jsx
 import React from "react";

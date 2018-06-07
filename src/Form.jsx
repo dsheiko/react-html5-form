@@ -147,9 +147,9 @@ export class Form extends React.Component {
     this.valid || this.scrollIntoViewFirstInvalidInputGroup();
     if ( this.valid && onSubmit ) {
       await onSubmit.call( this, this );
+      this.updateSubmitted();
     }
     this.toggleSubmitting( false );
-    this.updateSubmitted();
   }
   /**
    * Toggle submitting state
@@ -270,7 +270,12 @@ export class Form extends React.Component {
 
     return (
       <FormContext.Provider value={context}>
-          <form noValidate ref={this.form} {...tagProps} onSubmit={this.onSubmit}>
+          <form noValidate ref={this.form} {...tagProps}
+            data-valid={valid}
+            data-pristine={pristine}
+            data-submitting={submitting}
+            data-submitted={submitted}
+            onSubmit={this.onSubmit}>
             { children( { error, valid, pristine, submitting, submitted, form } ) }
           </form>
       </FormContext.Provider>

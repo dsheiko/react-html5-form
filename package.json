@@ -53,9 +53,13 @@
   "jest": {
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
+    "testPathIgnorePatterns": [
+      "./e2e"
+    ],
     "coveragePathIgnorePatterns": [
       "./node_modules/",
-      "./dist"
+      "./dist",
+      "./e2e"
     ]
   }
 }

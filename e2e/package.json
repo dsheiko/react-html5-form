@@ -1,0 +1,27 @@
+{
+  "name": "react-html5-form-demo-e2e",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "node test-server.js",
+    "test:debug": "node test-server.js --debug"
+  },
+  "jest": {
+    "verbose": true,
+    "testMatch": [
+      "**/*.spec.js"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cross-env": "^5.1.6",
+    "jest": "^23.1.0",
+    "puppeteer": "^1.4.0"
+  },
+  "devDependencies": {
+    "express": "^4.16.3",
+    "minimist": "^1.2.0"
+  }
+}

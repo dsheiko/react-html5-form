@@ -254,7 +254,7 @@ var Form = exports.Form = function (_React$Component) {
                 this.valid || this.scrollIntoViewFirstInvalidInputGroup();
 
                 if (!(this.valid && onSubmit)) {
-                  _context.next = 8;
+                  _context.next = 9;
                   break;
                 }
 
@@ -262,8 +262,10 @@ var Form = exports.Form = function (_React$Component) {
                 return onSubmit.call(this, this);
 
               case 8:
-                this.toggleSubmitting(false);
                 this.updateSubmitted();
+
+              case 9:
+                this.toggleSubmitting(false);
 
               case 10:
               case "end":
@@ -445,7 +447,12 @@ var Form = exports.Form = function (_React$Component) {
         { value: context },
         _react2.default.createElement(
           "form",
-          (0, _extends3.default)({ noValidate: true, ref: this.form }, tagProps, { onSubmit: this.onSubmit }),
+          (0, _extends3.default)({ noValidate: true, ref: this.form }, tagProps, {
+            "data-valid": valid,
+            "data-pristine": pristine,
+            "data-submitting": submitting,
+            "data-submitted": submitted,
+            onSubmit: this.onSubmit }),
           children({ error: error, valid: valid, pristine: pristine, submitting: submitting, submitted: submitted, form: form })
         )
       );

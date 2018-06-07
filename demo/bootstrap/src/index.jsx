@@ -7,7 +7,7 @@ const XHR_TIMEOUT = 1000;
 
 async function onSubmit( form ) {
   try {
-    const rsp = await fetch( `server-response.json` ).then( rsp => rsp.json() );
+    let rsp = await fetch( `server-response.json` ).then( rsp => rsp.json() );
     if ( !rsp.ok ) {
        form.setError( rsp.exception.message );
     }
