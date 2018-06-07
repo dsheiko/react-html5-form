@@ -1,5 +1,10 @@
+- 1.0.7
+  - added `submitted` state property  in scope of form
+  - form state state booleans reflect on data-attributes
+  - extended bootstrap demo
+  - added E2E example
 - 1.0.6
-  - added `pristine` and `submitting` properties in scope of form
+  - added `pristine` and `submitting` state properties in scope of form
   - `scrollIntoViewFirstInvalidInputGroup()` gets called only on submit, not with every checkValidity
 - 1.0.5
   - fixing build
