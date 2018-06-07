@@ -6,9 +6,13 @@ import { Form, InputGroup } from "Form";
 const XHR_TIMEOUT = 1000;
 
 async function onSubmit( form ) {
-  const rsp = await fetch( `server-response.json` ).then( rsp => rsp.json() );
-  if ( rsp.ok ) {
-     form.setError( rsp.exception.message );
+  try {
+    const rsp = await fetch( `server-response.json` ).then( rsp => rsp.json() );
+    if ( !rsp.ok ) {
+       form.setError( rsp.exception.message );
+    }
+  } catch( e ) {
+    form.setError( "Server error" );
   }
 };
 
@@ -51,7 +55,7 @@ const MyForm = props => (
           </div>)
         }
 
-        { submitted && valid && (<div className="alert alert-success" role="alert">
+        { submitted && !error && (<div className="alert alert-success" role="alert">
           Thanks for submitting!
           </div>)
         }

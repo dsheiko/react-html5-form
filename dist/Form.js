@@ -136,9 +136,21 @@ var Form = exports.Form = function (_React$Component) {
       formActions && formActions.updatePristine(_this.id, groupId);
     };
 
+    /**
+     *
+     * @param {string} message
+     * @param {number|null} ms - remove after ms
+     */
     _this.setError = function (message) {
+      var ms = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
       _this.updateStoreForFormValidity(message, _this.valid);
       _this.setState({ error: message });
+      if (ms !== null) {
+        setTimeout(function () {
+          return _this.setState({ error: "" });
+        }, ms);
+      }
     };
 
     _this.state = {

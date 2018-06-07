@@ -64,10 +64,17 @@ export class Form extends React.Component {
       );
     };
 
-
-    this.setError = ( message ) => {
+    /**
+     *
+     * @param {string} message
+     * @param {number|null} ms - remove after ms
+     */
+    this.setError = ( message, ms = null ) => {
       this.updateStoreForFormValidity( message, this.valid );
       this.setState({ error: message });
+      if ( ms !== null ) {
+        setTimeout(() => this.setState({ error: "" }), ms );
+      }
     };
 
     this.state = {

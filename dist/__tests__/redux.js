@@ -20,6 +20,17 @@ var defaultState = {
   forms: {}
 };
 
+function registerForm() {
+  return (0, _Form.html5form)(defaultState, {
+    type: _Constants.UPDATE_FORM_VALIDITY,
+    payload: {
+      formId: FIX_FORM_ID,
+      valid: true,
+      error: ""
+    }
+  });
+}
+
 describe("Redux", function () {
 
   describe("html5form reducer", function () {
@@ -46,28 +57,14 @@ describe("Redux", function () {
 
     it("registers form", function () {
 
-      var state = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      var state = registerForm();
       expect((0, _keys2.default)(state.forms).length).toEqual(1);
       expect(state.forms[FIX_FORM_ID].id).toEqual(FIX_FORM_ID);
     });
 
     it("updates form", function () {
 
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      var prevState = registerForm();
 
       var nextState = (0, _Form.html5form)(prevState, {
         type: _Constants.UPDATE_FORM_VALIDITY,
@@ -84,14 +81,7 @@ describe("Redux", function () {
 
     it("updates pristine", function () {
 
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      var prevState = registerForm();
 
       var nextState = (0, _Form.html5form)(prevState, {
         type: _Constants.UPDATE_PRISTINE,
@@ -105,14 +95,7 @@ describe("Redux", function () {
 
     it("updates pristine for non existing form", function () {
 
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      var prevState = registerForm();
 
       var nextState = (0, _Form.html5form)(prevState, {
         type: _Constants.UPDATE_PRISTINE,
@@ -126,14 +109,7 @@ describe("Redux", function () {
 
     it("updates submitting", function () {
 
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      var prevState = registerForm();
 
       var nextState = (0, _Form.html5form)(prevState, {
         type: _Constants.UPDATE_FORM_SUBMITTING,
@@ -146,37 +122,9 @@ describe("Redux", function () {
       expect(nextState.forms[FIX_FORM_ID].submitting).toEqual(true);
     });
 
-    it("updates submitted", function () {
-
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
-
-      var nextState = (0, _Form.html5form)(prevState, {
-        type: _Constants.UPDATE_FORM_SUBMITTED,
-        payload: {
-          formId: FIX_FORM_ID
-        }
-      });
-
-      expect(nextState.forms[FIX_FORM_ID].submitted).toEqual(true);
-    });
-
     it("updates submitting for non-existing form", function () {
 
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      var prevState = registerForm();
 
       var nextState = (0, _Form.html5form)(prevState, {
         type: _Constants.UPDATE_FORM_SUBMITTING,
@@ -189,16 +137,38 @@ describe("Redux", function () {
       expect(nextState.forms[FIX_FORM_ID].submitting).toEqual(false);
     });
 
-    it("registers inputGroup", function () {
+    it("updates submitted", function () {
 
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
+      var prevState = registerForm();
+
+      var nextState = (0, _Form.html5form)(prevState, {
+        type: _Constants.UPDATE_FORM_SUBMITTED,
         payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
+          formId: FIX_FORM_ID
         }
       });
+
+      expect(nextState.forms[FIX_FORM_ID].submitted).toEqual(true);
+    });
+
+    it("updates submitted for non-existing form", function () {
+
+      var prevState = registerForm();
+
+      var nextState = (0, _Form.html5form)(prevState, {
+        type: _Constants.UPDATE_FORM_SUBMITTED,
+        payload: {
+          formId: "NONEXISITNG",
+          submitting: true
+        }
+      });
+
+      expect(nextState.forms[FIX_FORM_ID].submitting).toEqual(false);
+    });
+
+    it("registers inputGroup", function () {
+
+      var prevState = registerForm();
 
       var nextState = (0, _Form.html5form)(prevState, {
         type: _Constants.UPDATE_INPUT_GROUP_VALIDITY,
@@ -217,14 +187,7 @@ describe("Redux", function () {
 
     it("registers input", function () {
 
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      var prevState = registerForm();
 
       var middleState = (0, _Form.html5form)(prevState, {
         type: _Constants.UPDATE_INPUT_GROUP_VALIDITY,
@@ -269,14 +232,7 @@ describe("Redux", function () {
 
     it("registers input out of group", function () {
 
-      var prevState = (0, _Form.html5form)(defaultState, {
-        type: _Constants.UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      var prevState = registerForm();
 
       var nextState = (0, _Form.html5form)(prevState, {
         type: _Constants.UPDATE_INPUT_VALIDITY,

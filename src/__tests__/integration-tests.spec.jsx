@@ -35,6 +35,17 @@ const FixtureSimpleFormContent = ({ error, valid, form }) => (
   </React.Fragment>
 );
 
+const FixtureSimpleFormContentMs = ({ error, valid, form }) => (
+  <React.Fragment>
+    <h2 data-testid="title">SimpleFormScope</h2>
+    { error && (<div data-testid="error">{error}</div>)
+    }
+    <button data-testid="button" onClick={() => {
+        form.setError( FIX_TEXT, 10 );
+      }}>Submit</button>
+  </React.Fragment>
+);
+
 const FixtureEmailFieldset = ({ error, valid, form }) => (
   <React.Fragment>
     { error && (<div data-testid="formError">{error}</div>)
@@ -248,6 +259,22 @@ describe("<Form />", () => {
           expect(getByTestId( "error" ).textContent).toBe( FIX_TEXT );
           expect(true).toEqual( true );
       });
+
+      it("removes form error after given time", ( done ) => {
+          const { container, getByTestId, queryByTestId } = render(
+              <Form>
+                 { props => <FixtureSimpleFormContentMs {...props} /> }
+              </Form>,
+          );
+          expect(queryByTestId( "error" )).toBeNull();
+          Simulate.click(getByTestId( "button" ));
+          expect(getByTestId( "error" ).textContent).toBe( FIX_TEXT );
+          setTimeout(() => {
+            expect( queryByTestId( "error" ) ).toBe( null );
+            done();
+          }, 50 );
+      });
+
     });
 
     describe("checkValidityAndUpdate", () => {
