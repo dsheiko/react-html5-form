@@ -3,7 +3,8 @@ import { UPDATE_INPUT_VALIDITY,
          UPDATE_INPUT_GROUP_VALIDITY,
          UPDATE_PRISTINE,
          UPDATE_FORM_SUBMITTING,
-         UPDATE_FORM_VALIDITY } from "../Constants";
+         UPDATE_FORM_VALIDITY,
+         UPDATE_FORM_SUBMITTED } from "../Constants";
 
 const defaultState = {
   forms: {}
@@ -44,6 +45,13 @@ export function html5form( prevState = defaultState, { type, payload } = { type:
       state.forms[ payload.formId ].submitting =  payload.submitting;
       return state;
 
+    case UPDATE_FORM_SUBMITTED:
+      if ( !( payload.formId in state.forms ) ) {
+        return state;
+      }
+      state.forms[ payload.formId ].submitted = true;
+      return state;
+
     case UPDATE_INPUT_GROUP_VALIDITY:
       if ( !( payload.formId in state.forms ) ) {
         return state;
@@ -68,7 +76,8 @@ export function html5form( prevState = defaultState, { type, payload } = { type:
         valid: payload.valid,
         error: payload.error,
         pristine: true,
-        submitting: false
+        submitting: false,
+        submitted: false
       };
       return state;
 

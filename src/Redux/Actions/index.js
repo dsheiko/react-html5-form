@@ -3,7 +3,8 @@ import {
   UPDATE_INPUT_GROUP_VALIDITY,
   UPDATE_FORM_VALIDITY,
   UPDATE_PRISTINE,
-  UPDATE_FORM_SUBMITTING } from "../Constants";
+  UPDATE_FORM_SUBMITTING,
+  UPDATE_FORM_SUBMITTED } from "../Constants";
 
 export const updateInputValidity = (
   formId = "", groupId = "", name = "", validity = {}, validationMessage = "") => ({
@@ -48,4 +49,9 @@ export const updatePristine = (
 export const updateSubmitting = ( formId = "", submitting = false ) => ({
     type: UPDATE_FORM_SUBMITTING,
     payload: { formId, submitting }
+});
+
+export const updateSubmitted = ( formId = "" ) => ({
+    type: UPDATE_FORM_SUBMITTED,
+    payload: { formId }
 });

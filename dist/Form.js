@@ -147,6 +147,7 @@ var Form = exports.Form = function (_React$Component) {
       inputGroups: [],
       pristine: true,
       submitting: false,
+      submitted: false,
       registerInputGroup: registerInputGroup,
       updateStoreForInputGroupValidity: updateStoreForInputGroupValidity,
       updateStoreForInputValidity: updateStoreForInputValidity,
@@ -205,6 +206,18 @@ var Form = exports.Form = function (_React$Component) {
 
       formActions && formActions.updateFormValidity(this.id, valid, error);
     }
+    /**
+     * Toogle form state prop submitted
+     */
+
+  }, {
+    key: "updateSubmitted",
+    value: function updateSubmitted() {
+      var formActions = this.props.formActions;
+
+      this.setState({ submitted: true });
+      formActions && formActions.updateSubmitted(this.id);
+    }
 
     /**
      * Abstract method to be overriden by a concrete implementation
@@ -238,8 +251,9 @@ var Form = exports.Form = function (_React$Component) {
 
               case 8:
                 this.toggleSubmitting(false);
+                this.updateSubmitted();
 
-              case 9:
+              case 10:
               case "end":
                 return _context.stop();
             }
@@ -408,6 +422,7 @@ var Form = exports.Form = function (_React$Component) {
           valid = _state.valid,
           pristine = _state.pristine,
           submitting = _state.submitting,
+          submitted = _state.submitted,
           context = (0, _extends3.default)({}, this.state, { formActions: formActions, formState: formState }),
           form = this,
           tagProps = Form.normalizeTagProps(this.props);
@@ -419,7 +434,7 @@ var Form = exports.Form = function (_React$Component) {
         _react2.default.createElement(
           "form",
           (0, _extends3.default)({ noValidate: true, ref: this.form }, tagProps, { onSubmit: this.onSubmit }),
-          children({ error: error, valid: valid, pristine: pristine, submitting: submitting, form: form })
+          children({ error: error, valid: valid, pristine: pristine, submitting: submitting, submitted: submitted, form: form })
         )
       );
     }

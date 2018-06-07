@@ -62,6 +62,13 @@ function html5form() {
       state.forms[payload.formId].submitting = payload.submitting;
       return state;
 
+    case _Constants.UPDATE_FORM_SUBMITTED:
+      if (!(payload.formId in state.forms)) {
+        return state;
+      }
+      state.forms[payload.formId].submitted = true;
+      return state;
+
     case _Constants.UPDATE_INPUT_GROUP_VALIDITY:
       if (!(payload.formId in state.forms)) {
         return state;
@@ -84,7 +91,8 @@ function html5form() {
         valid: payload.valid,
         error: payload.error,
         pristine: true,
-        submitting: false
+        submitting: false,
+        submitted: false
       });
       return state;
 

@@ -69,6 +69,7 @@ import { Form } from "react-html5-form";
 - `<Boolean>` `valid` - form validity state
 - `<Boolean>` `pristine` - true if user has not interacted with the form yet.
 - `<Boolean>` `submitting` - true while form is being processed on submission
+- `<Boolean>` `submitted` - true after form submitted
 - `<React.Component>` `form` - link to the component API
 
 #### Defining component

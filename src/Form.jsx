@@ -76,6 +76,7 @@ export class Form extends React.Component {
       inputGroups: [],
       pristine: true,
       submitting: false,
+      submitted: false,
       registerInputGroup,
       updateStoreForInputGroupValidity,
       updateStoreForInputValidity,
@@ -118,6 +119,14 @@ export class Form extends React.Component {
       this.id, valid, error
     );
   }
+  /**
+   * Toogle form state prop submitted
+   */
+  updateSubmitted() {
+    const { formActions } = this.props;
+    this.setState({ submitted: true });
+    formActions && formActions.updateSubmitted( this.id );
+  }
 
   /**
    * Abstract method to be overriden by a concrete implementation
@@ -133,7 +142,7 @@ export class Form extends React.Component {
       await onSubmit.call( this, this );
     }
     this.toggleSubmitting( false );
-
+    this.updateSubmitted();
   }
   /**
    * Toggle submitting state
@@ -247,7 +256,7 @@ export class Form extends React.Component {
    */
   render() {
     const { inputs, children, formActions, formState } = this.props,
-      { error, valid, pristine, submitting } = this.state,
+      { error, valid, pristine, submitting, submitted } = this.state,
       context = { ...this.state, formActions, formState },
       form = this,
       tagProps = Form.normalizeTagProps( this.props );
@@ -255,7 +264,7 @@ export class Form extends React.Component {
     return (
       <FormContext.Provider value={context}>
           <form noValidate ref={this.form} {...tagProps} onSubmit={this.onSubmit}>
-            { children( { error, valid, pristine, submitting, form } ) }
+            { children( { error, valid, pristine, submitting, submitted, form } ) }
           </form>
       </FormContext.Provider>
     );

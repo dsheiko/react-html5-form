@@ -6,13 +6,10 @@ import { Form, InputGroup } from "Form";
 const XHR_TIMEOUT = 1000;
 
 async function onSubmit( form ) {
-  return new Promise(( resolve ) => {
-    setTimeout(() => {
-      // let's pretend we have a server error
-      form.setError("Opps, a server error");
-      return resolve();
-    }, XHR_TIMEOUT );
-  });
+  const rsp = await fetch( `server-response.json` ).then( rsp => rsp.json() );
+  if ( rsp.ok ) {
+     form.setError( rsp.exception.message );
+  }
 };
 
 // Debounce for 50ms
@@ -38,7 +35,7 @@ const validateDateTime = ( input ) => {
 
 const MyForm = props => (
   <Form onSubmit={onSubmit} id="myform">
-  {({ error, valid, pristine, submitting, form }) => (
+  {({ error, valid, pristine, submitting, submitted, form }) => (
       <React.Fragment>
         <h2>Demo Form</h2>
 
@@ -54,70 +51,82 @@ const MyForm = props => (
           </div>)
         }
 
-        <InputGroup
-          tag="fieldset"
-          validate={[ "email" ]}
-          translate={{
-            email: {
-              valueMissing: "C'mon! We need some value"
-            }
-          }}>
-        {({ error, valid }) => (
+        { submitted && valid && (<div className="alert alert-success" role="alert">
+          Thanks for submitting!
+          </div>)
+        }
 
-          <div className="form-group">
-          <label id="emailLabel" htmlFor="emailInput">Email address</label>
-            <input
-              type="email"
-              required
-              name="email"
-              aria-labelledby="emailLabel"
-              className={`form-control ${!valid && "is-invalid"}`}
-              id="emailInput"
-              aria-describedby="emailHelp"
-              placeholder="Enter email" />
+        <div className="form-row">
+
+          <InputGroup
+            tag="div"
+            className="form-group col-md-6"
+            validate={[ "email" ]}
+            translate={{
+              email: {
+                valueMissing: "C'mon! We need some value"
+              }
+            }}>
+          {({ error, valid }) => (
+
+            <div className="form-group">
+            <label id="emailLabel" htmlFor="emailInput">Email address</label>
+              <input
+                type="email"
+                required
+                name="email"
+                aria-labelledby="emailLabel"
+                className={`form-control ${!valid && "is-invalid"}`}
+                id="emailInput"
+                aria-describedby="emailHelp"
+                placeholder="Enter email" />
+
+                { error && (<div className="invalid-feedback">{error}</div>)  }
+
+                <small className="form-text text-muted">
+                  Group validates on submit event
+                </small>
+
+            </div>
+
+          )}
+          </InputGroup>
+
+          <InputGroup
+            tag="div"
+            className="form-group col-md-6"
+            validate={[ "firstName" ]}
+            translate={{
+              firstName: {
+                patternMismatch: "Please enter a valid first name."
+              }
+            }}>
+          {({ error, valid, inputGroup }) => (
+            <div className="form-group">
+              <label id="firstNameLabel" htmlFor="firstNameInput">First Name</label>
+              <input
+                pattern="^.{5,30}$"
+                required
+                className={`form-control ${!valid && "is-invalid"}`}
+                id="firstNameInput"
+                aria-labelledby="firstNameLabel"
+                name="firstName"
+                onInput={( e ) => onInput( e, inputGroup, form ) }
+                placeholder="Enter first name"/>
 
               { error && (<div className="invalid-feedback">{error}</div>)  }
 
               <small className="form-text text-muted">
-                Group validates on submit event
+                  Group validates as you are typing
               </small>
 
-          </div>
-
-        )}
-        </InputGroup>
-
-        <InputGroup
-          validate={[ "firstName" ]}
-          translate={{
-            firstName: {
-              patternMismatch: "Please enter a valid first name."
-            }
-          }}>
-        {({ error, valid, inputGroup }) => (
-          <div className="form-group">
-            <label id="firstNameLabel" htmlFor="firstNameInput">First Name</label>
-            <input
-              pattern="^.{5,30}$"
-              required
-              className={`form-control ${!valid && "is-invalid"}`}
-              id="firstNameInput"
-              aria-labelledby="firstNameLabel"
-              name="firstName"
-              onInput={( e ) => onInput( e, inputGroup, form ) }
-              placeholder="Enter first name"/>
-
-            { error && (<div className="invalid-feedback">{error}</div>)  }
-
-            <small className="form-text text-muted">
-                Group validates as you are typing
-            </small>
 
 
+            </div>
+          )}
+          </InputGroup>
 
-          </div>
-        )}
-        </InputGroup>
+        </div>
 
         <InputGroup validate={{
           "vatId": ( input ) => {

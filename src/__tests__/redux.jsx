@@ -4,13 +4,15 @@ import {
   UPDATE_INPUT_GROUP_VALIDITY,
   UPDATE_INPUT_VALIDITY,
   UPDATE_FORM_SUBMITTING,
+  UPDATE_FORM_SUBMITTED,
   UPDATE_PRISTINE } from "../Redux/Constants";
 import {
   updateInputValidity,
   updateInputGroupValidity,
   updateFormValidity,
   updatePristine,
-  updateSubmitting } from "../Redux/Actions";
+  updateSubmitting,
+  updateSubmitted } from "../Redux/Actions";
 
 const FIX_FORM_ID = "myForm",
       FIX_GROUP_ID = "myGroup",
@@ -19,6 +21,17 @@ const FIX_FORM_ID = "myForm",
 let defaultState = {
   forms: {}
 };
+
+function registerForm() {
+  return html5form( defaultState, {
+    type: UPDATE_FORM_VALIDITY,
+    payload: {
+      formId: FIX_FORM_ID,
+      valid: true,
+      error: ""
+    }
+  });
+}
 
 describe( "Redux", () => {
 
@@ -48,14 +61,7 @@ describe( "Redux", () => {
 
     it( "registers form", () => {
 
-      const state = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      const state = registerForm();
       expect( Object.keys( state.forms ).length ).toEqual( 1 );
       expect( state.forms[ FIX_FORM_ID ].id ).toEqual( FIX_FORM_ID );
 
@@ -63,14 +69,7 @@ describe( "Redux", () => {
 
     it( "updates form", () => {
 
-      const prevState = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      const prevState = registerForm();
 
       const nextState = html5form( prevState, {
         type: UPDATE_FORM_VALIDITY,
@@ -88,14 +87,7 @@ describe( "Redux", () => {
 
     it( "updates pristine", () => {
 
-      const prevState = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      const prevState = registerForm();
 
       const nextState = html5form( prevState, {
         type: UPDATE_PRISTINE,
@@ -111,14 +103,7 @@ describe( "Redux", () => {
 
     it( "updates pristine for non existing form", () => {
 
-      const prevState = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      const prevState = registerForm();
 
       const nextState = html5form( prevState, {
         type: UPDATE_PRISTINE,
@@ -134,14 +119,7 @@ describe( "Redux", () => {
 
     it( "updates submitting", () => {
 
-      const prevState = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      const prevState = registerForm();
 
       const nextState = html5form( prevState, {
         type: UPDATE_FORM_SUBMITTING,
@@ -158,14 +136,7 @@ describe( "Redux", () => {
 
     it( "updates submitting for non-existing form", () => {
 
-      const prevState = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      const prevState = registerForm();
 
       const nextState = html5form( prevState, {
         type: UPDATE_FORM_SUBMITTING,
@@ -181,16 +152,43 @@ describe( "Redux", () => {
     });
 
 
-    it( "registers inputGroup", () => {
+    it( "updates submitted", () => {
 
-      const prevState = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
+      const prevState = registerForm();
+
+      const nextState = html5form( prevState, {
+        type: UPDATE_FORM_SUBMITTED,
         payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
+          formId: FIX_FORM_ID
         }
       });
+
+      expect( nextState.forms[ FIX_FORM_ID ].submitted ).toEqual( true );
+
+    });
+
+     it( "updates submitted for non-existing form", () => {
+
+      const prevState = registerForm();
+
+      const nextState = html5form( prevState, {
+        type: UPDATE_FORM_SUBMITTED,
+        payload: {
+          formId: "NONEXISITNG",
+          submitting: true
+        }
+      });
+
+      expect( nextState.forms[ FIX_FORM_ID ].submitting ).toEqual( false );
+
+    });
+
+
+
+
+    it( "registers inputGroup", () => {
+
+      const prevState = registerForm();
 
       const nextState = html5form( prevState, {
         type: UPDATE_INPUT_GROUP_VALIDITY,
@@ -212,14 +210,7 @@ describe( "Redux", () => {
 
     it( "registers input", () => {
 
-      const prevState = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      const prevState = registerForm();
 
       const middleState = html5form( prevState, {
         type: UPDATE_INPUT_GROUP_VALIDITY,
@@ -266,14 +257,7 @@ describe( "Redux", () => {
 
     it( "registers input out of group", () => {
 
-      const prevState = html5form( defaultState, {
-        type: UPDATE_FORM_VALIDITY,
-        payload: {
-          formId: FIX_FORM_ID,
-          valid: true,
-          error: ""
-        }
-      });
+      const prevState = registerForm();
 
       const nextState = html5form( prevState, {
         type: UPDATE_INPUT_VALIDITY,
@@ -361,6 +345,17 @@ describe( "Redux", () => {
       });
       it( "does not fail without parameters", () => {
         const res = updateSubmitting();
+        expect( res.payload.formId ).toEqual( "" );
+      });
+    });
+
+    describe( "updateSubmitted", () => {
+      it( "returns expected payload", () => {
+        const res = updateSubmitted( FIX_FORM_ID );
+        expect( res.payload.formId ).toEqual( FIX_FORM_ID );
+      });
+      it( "does not fail without parameters", () => {
+        const res = updateSubmitted();
         expect( res.payload.formId ).toEqual( "" );
       });
     });

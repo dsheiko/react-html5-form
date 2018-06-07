@@ -146,6 +146,27 @@ describe("Redux", function () {
       expect(nextState.forms[FIX_FORM_ID].submitting).toEqual(true);
     });
 
+    it("updates submitted", function () {
+
+      var prevState = (0, _Form.html5form)(defaultState, {
+        type: _Constants.UPDATE_FORM_VALIDITY,
+        payload: {
+          formId: FIX_FORM_ID,
+          valid: true,
+          error: ""
+        }
+      });
+
+      var nextState = (0, _Form.html5form)(prevState, {
+        type: _Constants.UPDATE_FORM_SUBMITTED,
+        payload: {
+          formId: FIX_FORM_ID
+        }
+      });
+
+      expect(nextState.forms[FIX_FORM_ID].submitted).toEqual(true);
+    });
+
     it("updates submitting for non-existing form", function () {
 
       var prevState = (0, _Form.html5form)(defaultState, {
@@ -339,6 +360,17 @@ describe("Redux", function () {
       });
       it("does not fail without parameters", function () {
         var res = (0, _Actions.updateSubmitting)();
+        expect(res.payload.formId).toEqual("");
+      });
+    });
+
+    describe("updateSubmitted", function () {
+      it("returns expected payload", function () {
+        var res = (0, _Actions.updateSubmitted)(FIX_FORM_ID);
+        expect(res.payload.formId).toEqual(FIX_FORM_ID);
+      });
+      it("does not fail without parameters", function () {
+        var res = (0, _Actions.updateSubmitted)();
         expect(res.payload.formId).toEqual("");
       });
     });
