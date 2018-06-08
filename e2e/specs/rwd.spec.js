@@ -1,7 +1,8 @@
 const puppeteer = require( "puppeteer" ),
+      devices = require( "puppeteer/DeviceDescriptors" ),
       BrowserSession = require( "../shared/BrowserSession" ),
       { png } = require( "../shared/helpers" ),
-      { SEL_FORM, SEL_SUBMIT, SEL_EMAIL, SEL_FNAME,
+      { BASE_URL, SEL_FORM, SEL_SUBMIT, SEL_EMAIL, SEL_FNAME,
       SEL_JUMBOTRON_DESC, NETWORK_TIMEOUT } = require( "../shared/constants" ),
 
       bs = new BrowserSession( puppeteer );
@@ -20,56 +21,68 @@ describe( "Boostrap Form Demo", () => {
   });
 
 
-  describe( "Responsive Web Design", () => {
-    describe( "Jumbotron description", () => {
+  describe( "Page", () => {
 
-      it( "is visible on 1280x1024", async () => {
-        await bs.openPageOn( 1280, 1024 );
-        await bs.page.screenshot( png( `rwd-jumbotron-on-1280x1024` ) );
-        const el = await bs.page.$( SEL_JUMBOTRON_DESC );
-        const isVisible = ( await el.boundingBox() !== null );
-        expect( isVisible ).toBeTruthy();
-      });
+    describe( "on PC/Notebook 1280x1024", () => {
 
-      it( "is not visible on 375x812", async () => {
-        await bs.openPageOn( 375, 812 );
-        await bs.page.screenshot( png( `rwd-jumbotron-on-375x812` ) );
-        const el = await bs.page.$( SEL_JUMBOTRON_DESC );
-        const isVisible = ( await el.boundingBox() !== null );
-        expect( isVisible ).not.toBeTruthy();
-      });
+
+        beforeEach(async () => {
+          await bs.page.setViewport({ width: 1280, height: 1024 });
+          await bs.page.goto( BASE_URL, { waitUntil: "networkidle2" } );
+        });
+
+        it( "has Jumbotron description", async () => {
+          await bs.page.screenshot( png( `rwd-jumbotron-on-1280x1024` ) );
+          const el = await bs.page.$( SEL_JUMBOTRON_DESC );
+          const isVisible = ( await el.boundingBox() !== null );
+          expect( isVisible ).toBeTruthy();
+        });
+
+        it( "keeps Email/First Name inputs on the same line", async () => {
+          const form = await bs.page.$( SEL_FORM ),
+                email = await bs.page.$( SEL_EMAIL ),
+                firstName = await bs.page.$( SEL_FNAME );
+
+          await form.screenshot( png( `rwd-email-fname-on-1280x1024` ) );
+          const emailBox = await email.boundingBox(),
+                firstNameBox = await firstName.boundingBox();
+
+          expect( emailBox.y ).toEqual( firstNameBox.y );
+
+        });
 
     });
 
-    describe( "Email/First Name inputs", () => {
-      it( "are on the same line when 1280x1024", async () => {
-        await bs.openPageOn( 1280, 1024 );
+    describe( "on iPhone X", () => {
 
-        const form = await bs.page.$( SEL_FORM ),
-              email = await bs.page.$( SEL_EMAIL ),
-              firstName = await bs.page.$( SEL_FNAME );
 
-        await form.screenshot( png( `rwd-email-fname-on-1280x1024` ) );
-        const emailBox = await email.boundingBox(),
-              firstNameBox = await firstName.boundingBox();
+        beforeEach(async () => {
+          await bs.page.emulate( devices[ "iPhone X" ] );
+          await bs.page.goto( BASE_URL, { waitUntil: "networkidle2" } );
+        });
 
-        expect( emailBox.y ).toEqual( firstNameBox.y );
+        it( "does not have Jumbotron description", async () => {
+          await bs.page.screenshot( png( `rwd-jumbotron-on-iPhoneX` ) );
+          const el = await bs.page.$( SEL_JUMBOTRON_DESC );
+          const isVisible = ( await el.boundingBox() !== null );
+          expect( isVisible ).not.toBeTruthy();
+        });
 
-      });
 
-      it( "are not on the same line when 375x812", async () => {
-        await bs.openPageOn( 375, 812 );
+        it( "keeps Email/First Name inputs one under another", async () => {
+          const form = await bs.page.$( SEL_FORM ),
+                email = await bs.page.$( SEL_EMAIL ),
+                firstName = await bs.page.$( SEL_FNAME );
 
-        const form = await bs.page.$( SEL_FORM ),
-              email = await bs.page.$( SEL_EMAIL ),
-              firstName = await bs.page.$( SEL_FNAME );
+          await form.screenshot( png( `rwd-email-fname-on-iPhoneX` ) );
+          const emailBox = await email.boundingBox(),
+                firstNameBox = await firstName.boundingBox();
 
-        await form.screenshot( png( `rwd-email-fname-on-375x812` ) );
-        const emailBox = await email.boundingBox(),
-              firstNameBox = await firstName.boundingBox();
+          expect( emailBox.y ).not.toEqual( firstNameBox.y );
+        });
 
-        expect( emailBox.y ).not.toEqual( firstNameBox.y );
-      });
     });
+
+
   });
 });

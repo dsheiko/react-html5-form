@@ -1,9 +1,9 @@
 const puppeteer = require( "puppeteer" ),
       BrowserSession = require( "../shared/BrowserSession" ),
       { png } = require( "../shared/helpers" ),
-      { SEL_FORM, SEL_SUBMIT, SEL_EMAIL, SEL_FNAME, SEL_VATID,
+      { BASE_URL, SEL_FORM, SEL_SUBMIT, SEL_EMAIL, SEL_FNAME, SEL_VATID,
         SEL_DAY, SEL_MONTH, SEL_FORM_ERROR,
-      ASYNC_TRANSITION_TIMEOUT, NETWORK_TIMEOUT } = require( "../shared/constants" ),
+        ASYNC_TRANSITION_TIMEOUT, NETWORK_TIMEOUT } = require( "../shared/constants" ),
 
       bs = new BrowserSession( puppeteer );
 
@@ -23,7 +23,8 @@ describe( "Boostrap Form Demo", () => {
   describe( "Form", () => {
 
     beforeEach(async () => {
-      await bs.openPageOn( 1280, 1024 );
+      await bs.page.setViewport({ width: 1280, height: 1024 });
+      await bs.page.goto( BASE_URL, { waitUntil: "networkidle2" } );
     });
 
     describe( "Submit button", () => {

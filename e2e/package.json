@@ -4,7 +4,9 @@
   "description": "",
   "scripts": {
     "test": "node test-server.js",
-    "test:debug": "node test-server.js --debug"
+    "test:debug": "node test-server.js --debug",
+    "test:remote": "URL=https://dsheiko.github.io/react-html5-form/ jest",
+    "test:remote:debug": "URL=https://dsheiko.github.io/react-html5-form/ DEBUG=true jest --detectOpenHandles"
   },
   "jest": {
     "verbose": true,
@@ -16,11 +18,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cross-env": "^5.1.6",
-    "jest": "^23.1.0",
-    "puppeteer": "^1.4.0"
   },
   "devDependencies": {
+    "cross-env": "^5.1.6",
+    "jest": "^23.1.0",
+    "puppeteer": "^1.4.0",
     "express": "^4.16.3",
     "minimist": "^1.2.0"
   }

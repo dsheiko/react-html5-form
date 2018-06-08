@@ -1,13 +1,6 @@
-const { BASE_URL } = require( "./constants" );
-
 class BrowserSession {
   constructor( puppeteer ) {
     this.puppeteer = puppeteer;
-  }
-
-  async openPageOn( width, height ) {
-    await this.page.setViewport({ width, height });
-    await this.page.goto( BASE_URL, { waitUntil: "networkidle2" } );
   }
 
   /**
