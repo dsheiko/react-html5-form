@@ -7,8 +7,7 @@ class BrowserSession {
 
   async openPageOn( width, height ) {
     await this.page.setViewport({ width, height });
-    await this.page.goto( BASE_URL );
-    await this.page.waitForSelector( `body` );
+    await this.page.goto( BASE_URL, { waitUntil: "networkidle2" } );
   }
 
   /**
@@ -22,7 +21,7 @@ class BrowserSession {
         ? {
             headless: false,
             slowMo: 40,
-            devtools: true
+            devtools: false
           }
         : {}
     );
