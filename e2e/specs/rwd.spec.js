@@ -1,22 +1,19 @@
-const puppeteer = require( "puppeteer" ),
-      devices = require( "puppeteer/DeviceDescriptors" ),
-      BrowserSession = require( "../shared/BrowserSession" ),
+const devices = require( "puppeteer/DeviceDescriptors" ),
+      bs = require( "../shared/BrowserSession" ),
       { png } = require( "../shared/helpers" ),
       { BASE_URL, SEL_FORM, SEL_SUBMIT, SEL_EMAIL, SEL_FNAME,
-      SEL_JUMBOTRON_DESC, NETWORK_TIMEOUT } = require( "../shared/constants" ),
-
-      bs = new BrowserSession( puppeteer );
+      SEL_JUMBOTRON_DESC, NETWORK_TIMEOUT } = require( "../shared/constants" );
 
 jest.setTimeout( NETWORK_TIMEOUT );
 
 describe( "Boostrap Form Demo", () => {
 
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await bs.setup();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await bs.teardown();
   });
 

@@ -1,22 +1,19 @@
-const puppeteer = require( "puppeteer" ),
-      BrowserSession = require( "../shared/BrowserSession" ),
+const bs = require( "../shared/BrowserSession" ),
       { png } = require( "../shared/helpers" ),
       { BASE_URL, SEL_FORM, SEL_SUBMIT, SEL_EMAIL, SEL_FNAME, SEL_VATID,
         SEL_DAY, SEL_MONTH, SEL_FORM_ERROR,
-        ASYNC_TRANSITION_TIMEOUT, NETWORK_TIMEOUT } = require( "../shared/constants" ),
-
-      bs = new BrowserSession( puppeteer );
+        ASYNC_TRANSITION_TIMEOUT, NETWORK_TIMEOUT } = require( "../shared/constants" );
 
 jest.setTimeout( NETWORK_TIMEOUT );
 
 describe( "Boostrap Form Demo", () => {
 
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await bs.setup();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await bs.teardown();
   });
 
@@ -34,7 +31,7 @@ describe( "Boostrap Form Demo", () => {
 
         await submitBtn.screenshot( png( `form-submit-before-input` ) );
 
-        const isDisabled = await form.$eval( `${SEL_FORM} ${SEL_SUBMIT}`, el => el.disabled );
+        const isDisabled = await form.$eval( `${SEL_SUBMIT}`, el => el.disabled );
         expect( isDisabled ).toBeTruthy();
 
       });
@@ -47,13 +44,13 @@ describe( "Boostrap Form Demo", () => {
         await email.type( SEL_EMAIL, `anything` );
         await submitBtn.screenshot( png( `form-submit-after-input` ) );
 
-        const isDisabled = await form.$eval( `${SEL_FORM} ${SEL_SUBMIT}`, el => el.disabled );
+        const isDisabled = await form.$eval( `${SEL_SUBMIT}`, el => el.disabled );
         expect( isDisabled ).not.toBeTruthy();
       });
     });
 
     describe( "Email field", () => {
-      it( "gets invalid state when invalid emailed typed in", async () => {
+      it( "gets invalid state when invalid email typed in", async () => {
 
         const form = await bs.page.$( SEL_FORM ),
             submitBtn = await form.$( SEL_SUBMIT ),
@@ -62,7 +59,7 @@ describe( "Boostrap Form Demo", () => {
         await email.type( `invalid-email` );
         await submitBtn.click();
         await bs.page.waitFor( ASYNC_TRANSITION_TIMEOUT );
-        const isInvalid = await form.$eval( `${SEL_FORM} ${SEL_EMAIL}`, el => el.matches( `:invalid` ) );
+        const isInvalid = await form.$eval( `${SEL_EMAIL}`, el => el.matches( `:invalid` ) );
         await form.screenshot( png( `form-email-invalid-state` ) );
         expect( isInvalid ).toBeTruthy();
 
@@ -86,7 +83,7 @@ describe( "Boostrap Form Demo", () => {
 
         await form.screenshot( png( `form-submitted` ) );
 
-        const errorMsg = await form.$eval( `${SEL_FORM} ${SEL_FORM_ERROR}`, el => el.innerText );
+        const errorMsg = await form.$eval( `${SEL_FORM_ERROR}`, el => el.innerText );
         expect( errorMsg ).toEqual( `Oh snap! Opps, a server error` );
 
       });

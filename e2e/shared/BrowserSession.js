@@ -1,15 +1,13 @@
+const puppeteer = require( "puppeteer" );
+
 class BrowserSession {
-  constructor( puppeteer ) {
-    this.puppeteer = puppeteer;
-  }
 
   /**
    * Obtain browser and page object on bootstrap
    */
   async setup() {
-    this.browser = await this.puppeteer.launch(
-       // when called like DEBUG=true jest
-       // open in a browser
+    this.browser = await puppeteer.launch(
+       // when called like DEBUG=true jest open in a browser
        process.env.DEBUG
         ? {
             headless: false,
@@ -33,4 +31,4 @@ class BrowserSession {
 }
 
 
-module.exports = BrowserSession;
+module.exports = new BrowserSession();
