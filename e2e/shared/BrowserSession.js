@@ -23,9 +23,6 @@ class BrowserSession {
    * Close browser on teardown
    */
   async teardown() {
-    if ( process.env.DEBUG ) {
-      return;
-    }
     this.browser.close();
   }
 }
