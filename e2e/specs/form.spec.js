@@ -41,7 +41,7 @@ describe( "Boostrap Form Demo", () => {
               submitBtn = await form.$( SEL_SUBMIT ),
               email = await form.$( SEL_EMAIL );
 
-        await email.type( SEL_EMAIL, `anything` );
+        await email.type( `anything` );
         await submitBtn.screenshot( png( `form-submit-after-input` ) );
 
         const isDisabled = await form.$eval( `${SEL_SUBMIT}`, el => el.disabled );
@@ -67,7 +67,7 @@ describe( "Boostrap Form Demo", () => {
     });
 
     describe( "Submission", () => {
-      it( "gets invalid state when invalid emailed typed in", async () => {
+      it( "gets invalid state when invalid email typed in", async () => {
 
         const form = await bs.page.$( SEL_FORM ),
             submitBtn = await form.$( SEL_SUBMIT );
