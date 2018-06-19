@@ -18,9 +18,11 @@ const FIX_FORM_ID = "myForm",
       FIX_GROUP_ID = "myGroup",
       FIX_NAME = "myName";
 
-let defaultState = {
+const defaultState = {
   forms: {}
 };
+
+const INITIAL_STATE = JSON.parse( JSON.stringify( defaultState ) );
 
 function registerForm() {
   return html5form( defaultState, {
@@ -37,16 +39,9 @@ describe( "Redux", () => {
 
   describe( "html5form reducer", () => {
 
-    beforeEach(() => {
-      defaultState = {
-        forms: {}
-      };
-    });
-
     it( "default state", () => {
       const state = html5form();
-      expect( defaultState ).toEqual( defaultState );
-
+      expect( state ).toEqual( defaultState );
     });
 
     it( "handling nonexisting action", () => {
@@ -55,8 +50,8 @@ describe( "Redux", () => {
         type: "NONEXISITNG",
         payload: {}
       });
-      expect( defaultState ).toEqual( defaultState );
-
+      expect( state ).toEqual( defaultState );
+      expect( defaultState ).toEqual( INITIAL_STATE );
     });
 
     it( "registers form", () => {
@@ -64,6 +59,7 @@ describe( "Redux", () => {
       const state = registerForm();
       expect( Object.keys( state.forms ).length ).toEqual( 1 );
       expect( state.forms[ FIX_FORM_ID ].id ).toEqual( FIX_FORM_ID );
+      expect( defaultState ).toEqual( INITIAL_STATE );
 
     });
 

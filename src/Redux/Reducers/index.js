@@ -11,7 +11,7 @@ const defaultState = {
 };
 
 export function html5form( prevState = defaultState, { type, payload } = { type: null, payload: {} }) {
-  const state = { ...prevState };
+  const state = JSON.parse( JSON.stringify( prevState ) );
   switch ( type ) {
     case UPDATE_INPUT_VALIDITY:
       const { formId, groupId, name, validity, validationMessage } = payload;
