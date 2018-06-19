@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "build": "babel --out-dir dist --ignore *.spec.js src"
+    "build": "babel --out-dir dist --ignore *.spec.js src",
+    "preversion": "npm test && npm run build",
+    "postversion": "git push && git push --tags"
   },
   "keywords": [
     "validation",
