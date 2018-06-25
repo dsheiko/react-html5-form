@@ -4,7 +4,7 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/react-html5-form.svg?style=flat)](https://www.npmjs.com/package/react-html5-form)
 [![codecov](https://codecov.io/gh/dsheiko/react-html5-form/branch/master/graph/badge.svg)](https://codecov.io/gh/dsheiko/react-html5-form)
 [![Build Status](https://travis-ci.org/dsheiko/react-html5-form.png)](https://travis-ci.org/dsheiko/react-html5-form)
-[![Tested with Jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)]
+[![Tested with Jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest)
 
 With the package you don't need to re-create form validation logic every time. Instead you take full advantage of [HTML5 Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation). Besides the package expose no custom input components, instead it provides wrapper `InputGroup`, which binds inputs (according to configuration) in the children DOM nodes. Thus you can go with both HTML controls and 3rd-party input components.
 
