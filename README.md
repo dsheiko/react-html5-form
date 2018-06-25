@@ -8,6 +8,8 @@
 
 With the package you don't need to re-create form validation logic every time. Instead you take full advantage of [HTML5 Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation). Besides the package expose no custom input components, instead it provides wrapper `InputGroup`, which binds inputs (according to configuration) in the children DOM nodes. Thus you can go with both HTML controls and 3rd-party input components.
 
+![React meets HTML Form Validation](https://github.com/dsheiko/react-html5-form/raw/master/docs/react-html5-form-logo.png)
+
 
 ## Highlights
 - Input implementation agnostic, can be used any arbitrary input controls (HTML or 3rd-party React components)
