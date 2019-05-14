@@ -2,9 +2,9 @@ import React from "react";
 import { render } from "react-dom";
 import debounce from "./debounce";
 import { Form, InputGroup } from "Form";
-import TextField from "material-ui/TextField";
-import { SnackbarContent } from "material-ui/Snackbar";
-import Button from "material-ui/Button";
+import TextField from "@material-ui/core/TextField";
+import Snackbar from "@material-ui/core/Snackbar";
+import Button from "@material-ui/core/Button";
 
 async function onSubmit( form ) {
   // let's pretend we have a server error
@@ -27,7 +27,7 @@ const MyForm = props => (
       <React.Fragment>
         <h2>Demo Form</h2>
 
-        { error && (<SnackbarContent message={error} />) }
+        { error && (<Snackbar message={error} />) }
 
         <InputGroup
           validate={[ "email" ]}
@@ -77,7 +77,7 @@ const MyForm = props => (
         </InputGroup>
 
 
-        <Button variant="raised" color="primary" type="submit">
+        <Button variant="contained" color="primary" type="submit">
           Primary
         </Button>
       </React.Fragment>

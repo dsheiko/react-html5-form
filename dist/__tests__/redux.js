@@ -4,6 +4,10 @@ var _keys = require("babel-runtime/core-js/object/keys");
 
 var _keys2 = _interopRequireDefault(_keys);
 
+var _stringify = require("babel-runtime/core-js/json/stringify");
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _Form = require("../Form");
 
 var _Constants = require("../Redux/Constants");
@@ -20,6 +24,8 @@ var defaultState = {
   forms: {}
 };
 
+var INITIAL_STATE = JSON.parse((0, _stringify2.default)(defaultState));
+
 function registerForm() {
   return (0, _Form.html5form)(defaultState, {
     type: _Constants.UPDATE_FORM_VALIDITY,
@@ -35,15 +41,9 @@ describe("Redux", function () {
 
   describe("html5form reducer", function () {
 
-    beforeEach(function () {
-      defaultState = {
-        forms: {}
-      };
-    });
-
     it("default state", function () {
       var state = (0, _Form.html5form)();
-      expect(defaultState).toEqual(defaultState);
+      expect(state).toEqual(defaultState);
     });
 
     it("handling nonexisting action", function () {
@@ -52,7 +52,8 @@ describe("Redux", function () {
         type: "NONEXISITNG",
         payload: {}
       });
-      expect(defaultState).toEqual(defaultState);
+      expect(state).toEqual(defaultState);
+      expect(defaultState).toEqual(INITIAL_STATE);
     });
 
     it("registers form", function () {
@@ -60,6 +61,7 @@ describe("Redux", function () {
       var state = registerForm();
       expect((0, _keys2.default)(state.forms).length).toEqual(1);
       expect(state.forms[FIX_FORM_ID].id).toEqual(FIX_FORM_ID);
+      expect(defaultState).toEqual(INITIAL_STATE);
     });
 
     it("updates form", function () {

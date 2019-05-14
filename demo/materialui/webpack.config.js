@@ -6,7 +6,7 @@ const { join } = require( "path" ),
       SRC_PKG_PATH = join( __dirname, "/../../", "./src/" ),
       PUBLIC_PATH = "./build/",
       PUBLIC_FULL_PATH = join( __dirname, PUBLIC_PATH );
-    
+
 module.exports = {
     // Application entry scripts
     entry: {
@@ -66,8 +66,11 @@ module.exports = {
                 }]
               ],
               plugins: [
+                "transform-class-properties",
                 "transform-object-rest-spread",
-                "transform-runtime"
+                "babel-plugin-syntax-dynamic-import",
+                "transform-runtime",
+                "transform-decorators-legacy"
               ]
             }
           }]

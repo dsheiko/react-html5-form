@@ -67,8 +67,11 @@ module.exports = {
                 }]
               ],
               plugins: [
+                "transform-class-properties",
                 "transform-object-rest-spread",
-                "transform-runtime"
+                "babel-plugin-syntax-dynamic-import",
+                "transform-runtime",
+                "transform-decorators-legacy"
               ]
             }
           }]

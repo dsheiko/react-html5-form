@@ -3,7 +3,9 @@ import { render } from "react-dom";
 import debounce from "./debounce";
 import { Form, InputGroup } from "Form";
 
-const XHR_TIMEOUT = 1000;
+const XHR_TIMEOUT = 1000,
+      MONTHS = [ "January", "February", "March", "April", "May",
+      "June", "July", "August", "September", "October", "November", "December" ];
 
 async function onSubmit( form ) {
   try {
@@ -73,14 +75,14 @@ const MyForm = props => (
             }}>
           {({ error, valid }) => (
 
-            <div className="form-group">
+            <div>
             <label id="emailLabel" htmlFor="emailInput">Email address</label>
               <input
                 type="email"
                 required
                 name="email"
                 aria-labelledby="emailLabel"
-                className={`form-control ${!valid && "is-invalid"}`}
+                className={`form-control ${valid ? "" : "is-invalid"}`}
                 id="emailInput"
                 aria-describedby="emailHelp"
                 placeholder="Enter email" />
@@ -106,12 +108,12 @@ const MyForm = props => (
               }
             }}>
           {({ error, valid, inputGroup }) => (
-            <div className="form-group">
+            <div>
               <label id="firstNameLabel" htmlFor="firstNameInput">First Name</label>
               <input
                 pattern="^.{5,30}$"
                 required
-                className={`form-control ${!valid && "is-invalid"}`}
+                className={`form-control ${valid ? "" : "is-invalid"}`}
                 id="firstNameInput"
                 aria-labelledby="firstNameLabel"
                 name="firstName"
@@ -145,7 +147,7 @@ const MyForm = props => (
           <div className="form-group">
             <label id="vatIdLabel" htmlFor="vatIdInput">VAT Number (optional)</label>
             <input
-              className={`form-control ${!valid && "is-invalid"}`}
+              className={`form-control ${valid ? "" : "is-invalid"}`}
               id="vatIdInput"
               aria-labelledby="vatIdLabel"
               name="vatId"
@@ -168,16 +170,16 @@ const MyForm = props => (
           <div className="form-row">
             <div className="form-group col-md-6">
                <label htmlFor="selectDay">Day</label>
-               <select name="day" id="selectDay" title="Day" className={`form-control ${!valid && "is-invalid"}`}>
+               <select name="day" id="selectDay" title="Day" className={`form-control ${valid ? "" : "is-invalid"}`}>
                   <option>Choose...</option>
-                  <option>...</option>
+                  { [ ...Array( 31 ).keys() ].map( inx => ( <option key={ inx }>{ inx + 1 }</option> )) }
                </select>
             </div>
             <div className="form-group col-md-6">
               <label htmlFor="selectMonth">Month</label>
-              <select name="month" id="selectMonth"  title="Month" className={`form-control ${!valid && "is-invalid"}`}>
+              <select name="month" id="selectMonth"  title="Month" className={`form-control ${valid ? "" : "is-invalid"}`}>
                   <option>Choose...</option>
-                  <option>...</option>
+                  { MONTHS.map( ( m, inx ) => ( <option key={ inx }>{ m }</option> )) }
               </select>
             </div>
           </div>
@@ -191,6 +193,53 @@ const MyForm = props => (
           </div>
         )}
         </InputGroup>
+
+
+        <div className="form-row">
+          <InputGroup
+            validate={[ "exampleCheck1", "exampleRadio1" ]}
+            className="form-group col-md-6">
+          {({ error, valid }) => (
+            <div>
+              <div className="form-check">
+                <input name="exampleCheck1" type="checkbox"
+                  className={`form-check-input ${valid ? "" : "is-invalid"}`} id="exampleCheck1" />
+                <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
+                { error && (<div className="invalid-feedback">{error}</div>)  }
+              </div>
+              <div className="form-check">
+                <input name="exampleRadio1" type="radio"
+                  className={`form-check-input ${valid ? "" : "is-invalid"}`} id="exampleRadio1" />
+                <label className="form-check-label" htmlFor="exampleRadio1">Pick me</label>
+                { error && (<div className="invalid-feedback">{error}</div>)  }
+              </div>
+            </div>
+
+          )}
+          </InputGroup>
+          <InputGroup
+            validate={[ "fileInput" ]}
+            className="form-group col-md-6">
+          {({ error, valid }) => (
+
+            <div>
+              <label id="fileInputLabel" htmlFor="fileInput">File</label>
+              <input
+                className={`form-control-file ${valid ? "" : "is-invalid"}`}
+                id="fileInput"
+                type="file"
+                required
+                aria-labelledby="fileInputLabel"
+                name="fileInput" />
+
+              { error && (<div className="invalid-feedback">{error}</div>)  }
+            </div>
+
+          )}
+          </InputGroup>
+
+        </div>
+
 
         <button
           disabled={ ( pristine || submitting ) }

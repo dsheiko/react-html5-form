@@ -17,6 +17,10 @@
       body {
         padding: 1rem;
       }
+      .form-control-file.is-invalid ~ .invalid-feedback,
+      .form-check-input.is-invalid ~ .invalid-feedback {
+        display: block;
+      }
       @media (max-width: 767.98px) {
         .gt-small {
           display: none;

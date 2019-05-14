@@ -1,4 +1,21 @@
 {
-    "presets": ["react", "env"],
-    "plugins": ["transform-object-rest-spread", "transform-runtime"]
+    presets: [
+      "react",
+      [ "env", {
+        "targets": {
+          "browsers": [
+            ">1%",
+            "last 2 versions",
+            "Firefox ESR"
+          ]
+        }
+      }]
+    ],
+    plugins: [
+      "transform-class-properties",
+      "transform-object-rest-spread",
+      "babel-plugin-syntax-dynamic-import",
+      "transform-runtime",
+      "transform-decorators-legacy"
+    ]
 }
